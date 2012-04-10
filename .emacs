@@ -1,0 +1,277 @@
+;; Line by line scrolling
+(setq scroll-step 1)
+
+;; Enable backup files
+(setq make-backup-files t)  ;; Change t to nil to turn this off.
+
+;; Save backup files to this dir
+(setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
+
+;; Show column number
+(column-number-mode 1)
+
+;; Fix C indenting
+(setq c-default-style "bsd"
+      c-basic0offset 8)
+
+;; Just in case.
+(mouse-wheel-mode -1)
+
+;; Haskell mode!
+(load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
+(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+
+;; Turn off blinking cursor.
+(when (fboundp 'blink-cursor-mode)
+  (blink-cursor-mode -1))
+
+;;
+; CUSTOM FUNCTIONS
+;;
+
+(defun chartify ()
+  "Formats a marked area into a pretty chart."
+  (interactive)
+  (message "Nothing yet!"))
+
+(defun longest-word (words)
+  "Given a list of words, gives the length of the longest one."
+  (foldl (lambda (acc word)
+	   (let ((word-len (string-width word)))
+	     (if (> word-len acc)
+		 word-len
+	       acc)))
+	 0
+	 words))
+
+; (longest-word (list "apple" "bear" "winnipeg" "terrificly"))
+
+(defun print-chart-row (cell-width words)
+  "Prints a row of the chart with given words."
+  (if (null words)
+      (insert "*")
+    (progn
+      (insert "* " (car words) " ")  ; Fix this to use cell-width!
+      (print-chart-row cell-width (cdr words)))))
+
+; (print-chart-row 6 (list "yes" "boss" "shazam!"))
+
+(defun add-def ()
+  "Depending on what version of Lisp you're using, adds:
+`(defxx (' so you can get defining!"
+  (interactive)
+  (let ((to-add (cond ((eq major-mode 'emacs-lisp-mode) "(defun ")
+		      ((eq major-mode 'scheme-mode) "(define (")
+		      ("(def"))))
+    (insert to-add)))
+
+(global-set-key (kbd "C-c C-d") 'add-def)
+
+(defun bill-template ()
+  "Adds a template for a fresh month in my bills file."
+  (interactive)
+  (progn
+    (save-excursion
+      (insert "NET:\nSalary:\nSavings:\nBills:\nTotal Spending:\n-Food:\n-Non-food:"))
+    (end-of-line)
+    (insert " ")))
+
+(global-set-key (kbd "C-c C-t") 'bill-template)
+
+;; Automatic right-parenthesis completer.
+(defun auto-parens ()
+  "Adds as many `)' as necessary from (point) onwards.
+BUG: Parens found in string and comments affect the regex match count!!!"
+  (interactive)
+  (let ((end (point))
+	(start (find-first-paren)))
+    (when start
+      (let* ((lefts (count-matches "(" start end))   ; Bug here.
+	     (rights (count-matches ")" start end))  ; And here.
+	     (diff (- lefts rights)))
+	(if (< diff 0)
+	    (message "You have %d too many parentheses already." (* (- 1) diff))
+	  (progn
+	    (goto-char end)
+	    (insert (replicate-string diff ")"))
+	    (message "Inserted %d right parentheses." diff)))))))
+
+(global-set-key (kbd "C-c C-p") 'auto-parens)
+      
+(defun find-first-paren ()
+  "Relative to (point), finds the first instance of `(' which
+appears in column zero. It's (point) is returned."
+  (save-excursion
+    (let ((here (point)))
+      (progn
+	(search-backward "(")
+	(if (= here (point))
+	    nil  ; The search failed.
+	  (if (point-at-col-zerop)
+	      (point)
+	    (find-first-paren)))))))
+
+(defun point-at-col-zerop ()
+  "Determines if (point) is in column zero."
+  (= 0 (current-column)))
+
+(defun replicate-string (n item)
+  "Fuses a string to itself `n' times."
+  (unless (zerop n)
+    (concat item (replicate-string (1- n) item))))
+
+(defun insert-replicated-string (n some-char)
+  "Writes a line made up of `some-char' of length `n'."
+  (interactive "p\nsSupply a char: ")
+  (insert (replicate-string n some-char)))
+
+;; Custom `progn'
+(defun my-progn (&rest funs)
+  "Takes a list of function calls and executes them 
+__while retaining a functional code structure__.
+You MUST quote all argument lists to this function."
+  (progn-work (reverse funs)))
+
+(defun progn-work (funs)
+  "Does the work."
+  (when funs
+    (apply (car (car funs))
+	   (discard-second (cdr (car funs))
+			   (progn-work (cdr funs))))))
+
+(defun discard-second (first second)
+  "Returns its first argument."
+  first)
+
+;; Underline Completer
+(defun underline-complete (item)
+  "Given a string of length 1, draws a line with that string equal in length
+to the line above it.
+If the current line to be inserted in is not blank, a newline will be added.
+Also, if the line above is blank, nothing will happen."
+  (interactive "sChar to underline with: ")
+  (cond ((= 1 (line-number-at-pos)) (message "Can't. You're at line 1."))
+	((not (= 1 (string-width item))) (message "Can't. Arg was too long."))
+	((let ((len (save-excursion
+		       (previous-line) (end-of-line) (current-column))))	       
+	   (if (zerop len)
+	       (message "Line above is blank.")
+	     (let ((here (point-at-line-start))
+		   (underline (replicate-string len item)))		   
+	       (progn
+		 (goto-char here)
+		 (unless (string-emptyp (get-current-line))
+		   (save-excursion
+		     (newline)))
+		 (insert underline))))))))
+
+(global-set-key (kbd "C-c C-u") 'underline-complete)
+
+(defun get-current-line ()
+  "Returns the string of the line that `point' resides in."
+  (interactive)
+  (save-excursion
+    (filter-buffer-substring (point-at-line-start) 
+			     (point-at-line-end)
+			     nil
+			     t)))
+
+(defun point-at-line-start ()
+  "Returns the `point' of the point at Column 0 in the current line."
+  (interactive)
+  (save-excursion
+    (progn
+      (beginning-of-line)
+      (point))))
+
+(defun point-at-line-end ()
+  "Returns the `point' of the point at the end of the current line."
+  (interactive)
+  (save-excursion
+    (progn
+      (end-of-line)
+      (point))))
+
+(defun stripr (line)
+  "Strips trailing whitespace."
+  (when (string-match "[ \t]*$" line)
+    (replace-match "" nil nil line)))
+
+;;;;;;;;;;;;;;;;
+; LIST FUNCTIONS
+;;;;;;;;;;;;;;;;
+(defun range (start end)
+  "Produces a list of ints from `start' to `end' exclusive.
+BUG: Recursion depth limit destroys this."
+  (if (= start end)
+      nil
+    (cons start
+	  (range (1+ start) end))))
+
+(defun my-reverse (items)
+  "Reverses a list."
+  (let ((f (lambda (x acc) (append acc (list x)))))
+    (foldr f nil items)))
+
+(defun list-elemp (x items)
+  "Determines if `x' is a member of `items'."
+  (if (null items)
+      nil
+    (if (equal x (car items))
+	t
+      (list-elemp x (cdr items)))))
+
+;;;;;;;;;;;;;;;;;;
+; STRING FUNCTIONS
+;;;;;;;;;;;;;;;;;;
+(defun string-emptyp (item)
+  "Deteremines if a given string is empty."
+  (string= item ""))
+
+(defun string-nth-char (n item)
+  "Returns the nth char of a given string."
+  (let ((chars (string-to-list item)))
+    (nth n chars)))
+
+(defun string-to-string-list (item)
+  "Converts a string to a list of each char as a string."
+  (mapcar 'string (string-to-list item)))
+
+(defun string-reverse (item)
+  "Reverses all the chars in a given string."
+  (apply 'string (reverse (string-to-list item))))
+
+; A whitespace is `32'
+(defun string-words (item)
+  "Splits a string into a list of its words"
+  (mapcar (lambda (w) (apply 'string w))
+	  (foldr (lambda (x acc)
+		   (cond ((null acc) (list (list x)))
+			 ((= 32 x) (cons nil acc))
+			 ((cons (cons x (car acc)) (cdr acc)))))
+		 nil
+		 (string-to-list item))))
+
+(defun string-unwords (words)
+  "Given a list of strings, fuses them via whitespace to make a sentence."
+  (mapconcat 'identity words " "))
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+; FUNCTIONAL PROGRAMMING
+;;;;;;;;;;;;;;;;;;;;;;;;
+(defun foldl (f zero items)
+  "Folds a list via a function `f' from left to right."
+  (if (null items)
+      zero
+    (foldl f (funcall f zero (car items)) (cdr items))))
+
+(defun foldr (f zero items)
+  "Folds a list via a function `f' from right to left."
+  (if (null items)
+      zero
+    (funcall f (car items) (foldr f zero (cdr items)))))
+
+(defalias 'map 'mapcar)
