@@ -32,10 +32,28 @@
 ; CUSTOM FUNCTIONS
 ;;
 
+; TODO: Make the boarder char optional.
 (defun chartify ()
   "Formats a marked area into a pretty chart."
   (interactive)
-  (message "Nothing yet!"))
+  (let* ((text (filter-buffer-substring (mark) (point) 'DELETETHATSHIT))
+	 (lines (split-string text "[\n]+"))
+	 (longest (longest-word (string-words (string-unwords lines))))
+	 (all-words-by-line (mapcar 'string-words lines)))
+    (print-all-chart-rows longest all-words-by-line)))
+	 
+(global-set-key (kbd "C-c C-c") 'chartify)
+
+"
+TEST YEAH BABY WIN MOOSE
+THIS IS THE BEST EVER
+OMG LIKE THREE WHOLE LINE
+
+日本語　机　椅子
+自宅　爆発　物理的
+答え　無念　新幹線
+四字熟語　あら　大変
+"
 
 (defun longest-word (words)
   "Given a list of words, gives the length of the longest one."
@@ -49,15 +67,31 @@
 
 ; (longest-word (list "apple" "bear" "winnipeg" "terrificly"))
 
+(defun print-all-chart-rows (cell-width words-by-line)
+  "Work for the function `chartify'"
+  (unless (null words-by-line)
+    (progn
+      (print-chart-row cell-width (car words-by-line))
+      (newline)
+      (underline-complete "*")
+      (newline)
+      (print-all-chart-rows cell-width (cdr words-by-line)))))
+
 (defun print-chart-row (cell-width words)
   "Prints a row of the chart with given words."
   (if (null words)
       (insert "*")
-    (progn
-      (insert "* " (car words) " ")  ; Fix this to use cell-width!
-      (print-chart-row cell-width (cdr words)))))
+    (let* ((word-len (string-width (car words)))
+	   (wid-diff (- cell-width word-len))
+	   (left-pad (replicate-string (/ wid-diff 2) " "))
+	   (right-pad (if (evenp wid-diff)
+			  left-pad
+			(replicate-string (1+ (/ wid-diff 2)) " "))))
+      (progn
+	(insert "* " left-pad (car words) right-pad " ") 
+	(print-chart-row cell-width (cdr words))))))
 
-; (print-chart-row 6 (list "yes" "boss" "shazam!"))
+; (print-chart-row 7 (list "yes" "boss" "shazam!"))
 
 (defun add-def ()
   "Depending on what version of Lisp you're using, adds:
@@ -93,7 +127,7 @@ BUG: Parens found in string and comments affect the regex match count!!!"
 	     (rights (count-matches ")" start end))  ; And here.
 	     (diff (- lefts rights)))
 	(if (< diff 0)
-	    (message "You have %d too many parentheses already." (* (- 1) diff))
+p	    (message "You have %d too many parentheses already." (* (- 1) diff))
 	  (progn
 	    (goto-char end)
 	    (insert (replicate-string diff ")"))
@@ -120,9 +154,14 @@ appears in column zero. It's (point) is returned."
 
 (defun replicate-string (n item)
   "Fuses a string to itself `n' times."
-  (unless (zerop n)
+  (if (< n 1)
+      ""
     (concat item (replicate-string (1- n) item))))
 
+; (replicate-string 5 "*")
+; (replicate-string 0 "*")
+
+; Is this used?
 (defun insert-replicated-string (n some-char)
   "Writes a line made up of `some-char' of length `n'."
   (interactive "p\nsSupply a char: ")
@@ -195,11 +234,6 @@ Also, if the line above is blank, nothing will happen."
       (end-of-line)
       (point))))
 
-(defun stripr (line)
-  "Strips trailing whitespace."
-  (when (string-match "[ \t]*$" line)
-    (replace-match "" nil nil line)))
-
 ;;;;;;;;;;;;;;;;
 ; LIST FUNCTIONS
 ;;;;;;;;;;;;;;;;
@@ -240,24 +274,31 @@ BUG: Recursion depth limit destroys this."
   "Converts a string to a list of each char as a string."
   (mapcar 'string (string-to-list item)))
 
-(defun string-reverse (item)
+(defun spptring-reverse (item)
   "Reverses all the chars in a given string."
   (apply 'string (reverse (string-to-list item))))
 
 ; A whitespace is `32'
+; A japanese whitespace is `12288'
 (defun string-words (item)
   "Splits a string into a list of its words"
-  (mapcar (lambda (w) (apply 'string w))
-	  (foldr (lambda (x acc)
-		   (cond ((null acc) (list (list x)))
-			 ((= 32 x) (cons nil acc))
-			 ((cons (cons x (car acc)) (cdr acc)))))
-		 nil
-		 (string-to-list item))))
+  (let ((spaces (list 32 12288)))
+    (mapcar (lambda (w) (apply 'string w))
+	    (foldr (lambda (x acc)
+		     (cond ((null acc) (list (list x)))
+			   ((list-elemp x spaces) (cons nil acc))
+			   ((cons (cons x (car acc)) (cdr acc)))))
+		   nil
+		   (string-to-list item)))))
 
 (defun string-unwords (words)
   "Given a list of strings, fuses them via whitespace to make a sentence."
   (mapconcat 'identity words " "))
+
+(defun stripr (line)
+  "Strips trailing whitespace."
+  (when (string-match "[ \t]*$" line)
+    (replace-match "" nil nil line)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ; FUNCTIONAL PROGRAMMING
@@ -275,3 +316,31 @@ BUG: Recursion depth limit destroys this."
     (funcall f (car items) (foldr f zero (cdr items)))))
 
 (defalias 'map 'mapcar)
+
+;;;;;;;;;;;;;;
+; NUMBER STUFF
+;;;;;;;;;;;;;;
+(defun evenp (num)
+  "Determines if a number is even."
+  (= 0 (% num 2)))
+
+; (evenp 2)
+; (evenp 5)
+
+(defun oddp (num)
+  "Determines if a number is odd."
+  (! (evenp num)))
+
+; (oddp 0) 
+; (oddp 1)
+; (oddp 2)
+
+(defun ! (bool)
+  "True becomes nil, nil becomes true."
+  (if bool
+      nil
+    t))
+
+; (! nil)
+; (! "lol")
+; (! 5)
