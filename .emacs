@@ -127,7 +127,7 @@ BUG: Parens found in string and comments affect the regex match count!!!"
 	     (rights (count-matches ")" start end))  ; And here.
 	     (diff (- lefts rights)))
 	(if (< diff 0)
-p	    (message "You have %d too many parentheses already." (* (- 1) diff))
+	    (message "You have %d too many parentheses already." (* (- 1) diff))
 	  (progn
 	    (goto-char end)
 	    (insert (replicate-string diff ")"))
