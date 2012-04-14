@@ -1,0 +1,140 @@
+Log of Various Fixes
+--------------------
+2012 Apr 14 - Removed .Xresources as it was redundant.
+     	    - Changed urxvt font and fixed the bold crappy Japanese problem
+	      by supplying a second font in the URxvt.font field.
+	      This provided a specific fallback for when a character
+	      (something in Japanese) wasn't present in the main font.
+	      Before it was defaulting to whatever it could find, then
+	      bolding it according to the settings of the main font.
+
+2012 Apr 05 - Reformatted and setup a new 8gig USB stick.
+     	      It can be mounted and unmounted with `mb` and `umb`.
+
+2012 Mar 24 - Added `fsck` to the HOOKS section of mkinitcpio.conf
+     	      This was added to the newer version of the conf file
+	      after an update, so I added it manually while _leaving out_
+	      `autodetect` because of what I remember of it causing trouble
+	      during my initial Arch installation.
+
+2012 Mar 14 - Fixed the weird speaker "beats" (pocks? sounds?) that would
+     	      occur when opening the lid and de-sleeping. I made a change
+	      in /etc/acpi/handler.sh.
+	      Line 60, what was `then pm-suspend` is now wrapped in commands
+	      that use `amixer` to mute and unmute alsa before and after sleeping.
+	      I suppose the forced unmuting could be considered a bug, if alsa
+	      was already muted beforehand and that was in fact prefered.
+
+2012 Mar 0? - Fixed the weird error at boot-time having to do with ALSA
+     	      and something hardware related. Resaving the ALSA levels
+	      with a one-liner made the problem go away. Perhaps the old
+	      settings were out-dated?
+
+2012 Feb 21 - GTK2 themes are now bitchin'. This affects chromium, wicd-client,
+     	      libreoffice, and graveman (among others).
+	    - I can now burn CDs and DVDs with graveman.
+	    - Tilem now works after I obtained a TI-83plus ROM.
+	      This doesn't bother me, as I own one of the things.
+
+2012 Feb 20 - Hmm... Hopefully the wireless is fixed. I applied two
+     	      solutions:
+	      1. pm-utils might have been too zealous. I added a script
+	      	 that turns off wireless powersaving.
+              2. wicd now uses dhclient and not dhcpcd to obtain IP
+	      	 addressed. The connection process was always failing
+		 at that part.
+
+2012 Feb 16 - Something is fucked... internet only connects half the time.
+     	    - Also, turns out I haven't updated [multilib] in forever!
+	      Somehow it was disabled in pacman.conf...
+
+2012 Feb 14 - Valentine's Day. Hacked some Haskell together to make Racket
+     	      run interactively with multiple files loaded at once.
+	      Running "rl file1.scm file2.scm file3.scm" translates to:
+	      "racket -i -f file1.scm -f file2.scm -f file3.scm"
+
+2012 Feb 08 - Sexified PS1 to make it look like a fully coloured Haskell
+     	      function definition.
+
+2012 Jan 30 - Got Wacom tablet working. (It worked fine plug-and-play)
+     	    - This laptop will now sleep properly when I close the lid.
+
+2012 Jan 26 - Made urxvt transparent by adding two lines to ~/.Xdefaults
+     	    - `coretemp' will be loaded as a module now, and `sensors'
+	      now prints CPU temperatures in a way that makes sense.
+	      Perhaps kernel updates are to thank? :)
+
+2012 Jan 25 - Got spellcheck working in Libreoffice by installing
+     	      `hunspell' and `hunspell-en'
+	    - Fixed the low DVD volume in mplayer by adding two values to
+	      ~/.mplayer/config
+	    - Succeeded in mounting an SD card.
+	        sudo mount -t vfat <device-path> <mount-path>
+	    - Kindle can now be mounted with `mk' and unmounted with 'umk'
+	      Calibre can now see the device as well.
+
+2012 Jan 18 - Fixed pacman (now version 4) by switching the .conf files around.
+     	      Turns out the old .conf wouldn't work. Duh.
+
+2012 Jan 09 - Updated rc.conf to the new layout.
+     	      Old file is saved as rc.conf.old
+	    - Computer unrelated: Pimped out my bike with technology :)
+
+2012 Jan 06 - Laptop Mode Tools:
+     	    - Keyboard and Mouse should not auto-suspend.
+	    - Added `commit=600' to my HDs mount options in fstab.
+	      This will reduce journaling period to once every ten minutes.
+	    - Turns out my CPU was on the max frequency _all the time_.
+	    - Added cpufreqtools, and have set my default frequency governor to
+	      `ondemand'. Adding cpufreq to my DAEMONS array will ensure this
+	      will be set on boot.
+	      The custom commands `powerup' and `powerdown' can be used to 
+	      switch between the `performance' and `ondemand' governors.
+
+2012 Jan 05 - Got wicd working. I now have wireless internet!
+     	    - Made various changes to xmonad.hs
+	      Auto-shifting of programs to workspaces DOES NOT work.
+	      Removed borders for Workspace 9 DOES.
+	      For playing Skyrim, make sure to:
+	      1. Move the system tray icon to another workspace.
+	      2. De-tile the Skyrim window (command-t).
+
+2011 Dec 27 - Fixed mpd by making all settings local to my username. 
+     	      The daemon is now configured via /home/colin/.mpd.conf
+	      It's likely that some some file permissions broke somehow.
+	      mpd was also removed from the list of start-up daemons.
+
+2011 Dec ?? - Got Skyrim working in a 32bit wine environment :)
+
+2011 Dec 05 - Removed duplicates in my music directory.
+
+2011 Dec 04 - Got Steam working. Got Portal working by installing lib32-nvidia-utils.
+     	      This also made me able to play Diablo II fullscreen.
+
+2011 Nov 28 - Switched to using `hsetroot' for setting the background image.
+
+2011 Nov 27 - Fixed Japanese. Turned out commenting-out all the lines in .xinitrc
+     	      that had to do with `uim' was the problem. I was not commenting-out
+	      what I thought I was.
+
+2011 Nov 23 - Function keys now work as they should.
+     	    - Arch can at least _detect_ the wireless network.
+	      Haven't actually connected yet.
+	    - mpd is now loaded on boot. Manual starting was getting tedious.
+
+2011 Nov 15 - GRUB was fucked and Arch wouldn't boot.
+     	      Rewrote the MBR in OSX. This got rid of the extra Tux logo, 
+	      and after re-installing GRUB, Arch would boot again. Yay!
+
+2011 Nov 13 - mpd now fully working.
+     	    - ncmpcpp installed and working!
+
+2011 Nov 05 - Got mplayer working. No GUI is being used.
+
+2011 Nov 03 - Added the option iocharset=utf8 to fstab, which allowed me to view
+     	      Japanese file names on my USB drive!
+
+2011 Nov 01 - My flashdrive can now be mounted freely with 'mf'.
+     	    - METROIDRIVE can be mounted with 'mmd'.
+     	    - Japanese broke for a while. Turned out locales were the problem.
+	      Running locale-gen regenerated them, and upon a reboot, everything worked.
