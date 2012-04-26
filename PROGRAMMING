@@ -1,0 +1,26 @@
+My Programming Progress
+-----------------------
+Apr 26 2012 - Released `nanq` to the AUR.
+
+Apr 10 2012 - Completed `chartify` in Emacs Lisp.
+
+Apr 04 2012 - `setwall` is now better. It can take options
+       	      and is now used to supply me with a random
+	      wallpaper upon each login.
+
+Mar 27 2012 - Completed `bill-template` in Emacs Lisp.
+
+Mar 26 2012 - Completed `nanq` in Haskell.
+
+Mar 23 2012 - Completed `rmexecs` in Haskell.
+
+Mar ?? 2012 - Completed `memcon` in Haskell.
+
+Feb 21 2012 - Completed `add-def` in Emacs Lisp.
+
+Feb 14 2012 - Completed `setwall` in Haskell.
+       	      Completed `rl` in Haskell.	  
+
+Jan 19 2012 - Completed `underline-complete` in Emacs Lisp.
+
+Jan 17 2012 - Completed `auto-parens` in Emacs Lisp.

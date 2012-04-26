@@ -89,7 +89,6 @@ alias ic='wicd-client -n'
 alias adder='~/code/haskell/adder/adder'
 alias pick='python2 ~/code/python/pygamestuff/name-star/name-star.py'
 alias rmexecs='/home/colin/code/haskell/rmexecs/rmexecs'
-alias nanq='cd /home/colin/code/haskell/nanq/ && ./nanq'
 
 #####################
 # DIRECTORY SHORTCUTS
@@ -119,6 +118,7 @@ alias mk='mount ~/mnt/kindle'
 alias umk='umount ~/mnt/kindle'
 alias mb='mount ~/mnt/buffaloflash'
 alias umb='umount ~/mnt/buffaloflash'
+alias pm='mount | column -t'
 
 # Some Colours
 txtcyn='\e[0;36m' # Cyan

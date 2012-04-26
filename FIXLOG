@@ -1,5 +1,12 @@
 Log of Various Fixes
 --------------------
+2012 Apr 21 - Internet problems have most likely been fixed. I downgraded
+     	      the kernel and the nvidia drivers using `pacman -U`.
+	      Note that I found the package files in:
+	        /var/cache/pacman/pkg/
+	      The packages `linux` `nvidia` and `nvidia-utils` will also
+	      be ignored upon uses of `-Syu`. This was set in pacman.conf.
+
 2012 Apr 14 - Removed .Xresources as it was redundant.
      	    - Changed urxvt font and fixed the bold crappy Japanese problem
 	      by supplying a second font in the URxvt.font field.
@@ -7,6 +14,8 @@ Log of Various Fixes
 	      (something in Japanese) wasn't present in the main font.
 	      Before it was defaulting to whatever it could find, then
 	      bolding it according to the settings of the main font.
+	    - Fixed ALSA hardware thing again with:
+	      sudo alsactl -f /var/lib/alsa/asound.state store
 
 2012 Apr 05 - Reformatted and setup a new 8gig USB stick.
      	      It can be mounted and unmounted with `mb` and `umb`.
