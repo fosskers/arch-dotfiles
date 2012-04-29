@@ -1,5 +1,8 @@
 Log of Various Fixes
 --------------------
+2012 Apr 29 - Got the fastest repo mirrors relative to my location by using
+     	      `reflector`. 
+
 2012 Apr 21 - Internet problems have most likely been fixed. I downgraded
      	      the kernel and the nvidia drivers using `pacman -U`.
 	      Note that I found the package files in:

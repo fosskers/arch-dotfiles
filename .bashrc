@@ -9,6 +9,7 @@
 # cpufreq-info -> See processor info.
 # xfburn -> Disc burning.
 # figlet -> Text to large ascii.
+# Convert sjis to utf8 -> iconv -f sjis -t utf8 'filename'
 
 ##################
 # RANDOM SHORTCUTS
