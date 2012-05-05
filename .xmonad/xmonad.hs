@@ -1,24 +1,44 @@
 import XMonad
 import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
+
 import Data.Monoid
 import System.Exit
+import System.Random (getStdGen,randomR,StdGen(..))
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
 
-main = do xmonad $ defaultConfig
-       	    { terminal = myTerminal
-	    , modMask  = mod4Mask
-	    , borderWidth = myBorderWidth
-	    , focusFollowsMouse = myFocusFollowsMouse
-	    , focusedBorderColor = myFocusedBorderColor
-            , keys = myKeys
-            , layoutHook = myLayout
-            , workspaces = myWorkspaces
-            , manageHook = myManageHook <+> manageHook defaultConfig
-            }
+main = do
+  gen <- getStdGen
+  let borderColour = randomColour gen
+  xmonad $ defaultConfig
+       { terminal           = myTerminal
+       , modMask            = mod4Mask
+       , borderWidth        = myBorderWidth
+       , focusFollowsMouse  = myFocusFollowsMouse
+       , focusedBorderColor = borderColour
+       , keys               = myKeys
+       , layoutHook         = myLayout
+       , workspaces         = myWorkspaces
+       , manageHook         = myManageHook <+> manageHook defaultConfig
+       }
+
+----------------
+-- RANDOM COLOUR
+----------------
+randomColour :: StdGen -> String
+randomColour gen = '#' : take 6 (yieldRandoms gen hexValues)
+
+hexValues :: String
+hexValues = "0123456789abcdef"
+
+-- Infinitely yields a random value from a given list.
+yieldRandoms :: StdGen -> [a] -> [a]
+yieldRandoms _ []   = []
+yieldRandoms gen xs = (xs !! pos) : yieldRandoms gen' xs
+    where (pos,gen') = randomR (0, length xs - 1) gen
 
 -------------------
 -- TRIVIAL SETTINGS

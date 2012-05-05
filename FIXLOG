@@ -1,5 +1,7 @@
 Log of Various Fixes
 --------------------
+2012 May 05 - xmonad borders will now be a random colour every time.
+
 2012 Apr 29 - Got the fastest repo mirrors relative to my location by using
      	      `reflector`. 
 
