@@ -142,7 +142,7 @@ mpd_music_dir = "/home/colin/music"
 ## Note: colors can be nested.
 ##
 #
-song_list_format = "{$2%a$9 $8-$9 }{$7%t$9}|{$8%f$9}$R{$3.~(%l)~.$9}"
+song_list_format = "{$2%a$9$8 >> $9}{$7%t$9}|{$8%f$9}$R{$3.~(%l)~.$9}"
 #
 song_status_format = "{{$2%a$9{ \"%b\"{ (%y)}} - }{$7%t$9}}|{%f}"
 #
