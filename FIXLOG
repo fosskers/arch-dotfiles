@@ -1,5 +1,11 @@
 Log of Various Fixes
 --------------------
+2012 Jun 06 - Changed shell to `fish`. Config file is located at:
+     	      ~/.config/fish/config.fish
+
+2012 May 19 - /etc/acpi/handler.sh got a small updated (*.pacnew)
+     	      but after reviewing it I decided to ignore it.
+
 2012 May 10 - Tried to upgrade to the 3.3.5 kernel, but was betrayed
      	      once again by internet speeds. It looks like I will have
 	      to be kernel-conservative for the foreseeable future.

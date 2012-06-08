@@ -46,9 +46,6 @@ yieldRandoms gen xs = (xs !! pos) : yieldRandoms gen' xs
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = False
 
-myFocusedBorderColor :: String
-myFocusedBorderColor = "#456def"  -- "#0099cc"
-
 myTerminal :: String
 myTerminal = "urxvt"
 

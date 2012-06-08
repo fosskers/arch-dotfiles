@@ -28,6 +28,13 @@
 (when (fboundp 'blink-cursor-mode)
   (blink-cursor-mode -1))
 
+;; Windows will split left-right.
+(setq split-height-threshold nil)
+(setq split-width-threshold 0)
+
+;; Is this safe?
+(setq max-lisp-eval-depth 1000)
+
 ;;
 ; CUSTOM FUNCTIONS
 ;;

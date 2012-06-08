@@ -64,6 +64,10 @@ function wine32() {
     env WINEARCH=win32 WINEPREFIX=~/.wine32 "$1" "$2"
 }
 
+function grock() {
+    env WINEPREFIX=~/.wine-grock "$1" "$2"
+}
+
 # Manually setting CPU frequency
 function powerup() {
     for i in 0 1; do sudo cpufreq-set -c $i -g performance; done
@@ -99,6 +103,8 @@ alias share='cd ~/share/colinsharing'
 alias sr='cd ~/.wine32/drive_c/Program\ Files/Steam/steamapps/common/skyrim'
 alias pl='cd ~/code/lib/pymodules'
 alias sto='cd ~/.wine32/drive_c/Program\ Files/Cryptic\ Studios/'
+alias nar='cd /home/colin/mnt/METROIDRIVE/linuxdls/Naruto-Shippuuden/Naruto\ Shippuden/Naruto\ HD\ Batch'
+alias log='cd ~/.wine-grock/drive_c/Program\ Files\ \(x86\)/GOG.com/Legend\ of\ Grimrock'
 
 ###################
 # REVAMPED COMMANDS
@@ -134,3 +140,4 @@ PS1="\[$bldblu\]\u \[$txtrst\](\h\[$bldylw\]:\[$txtcyn\]_\[$txtrst\]) \W = \[$tx
 # Python libs.
 export PYTHONPATH=${PYTHONPATH}:/home/colin/code/lib/pymodules/
 export EDITOR='emacs -nw'
+export PATH=$PATH:/home/colin/.gem/ruby/1.9.1/bin
