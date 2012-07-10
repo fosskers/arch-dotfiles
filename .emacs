@@ -39,6 +39,36 @@
 ; CUSTOM FUNCTIONS
 ;;
 
+(defun insert-braces ()
+  "Inserts braces for quicker coding in C-like languages."
+  (interactive)
+  (progn
+    (insert "{")
+    (newline-and-indent)
+    (save-excursion
+      (newline)
+      (insert "}")
+      (beginning-of-line)
+      (indent-according-to-mode))))
+
+(global-set-key (kbd "C-c [") 'insert-braces)
+
+(defun js-frame ()
+  "Inserts basic HTML to be filled with Javascript."
+  (interactive)
+  (let ((top "<html><body><script type=\"text/javascript\">")
+	(bottom "</script></body></html>"))
+    (progn
+      (insert top)
+      (newline)
+      (newline)
+      (save-excursion
+	(newline)
+	(newline)
+	(insert bottom)))))
+
+(global-set-key (kbd "C-c j") 'js-frame)
+
 ; TODO: Make the boarder char optional.
 (defun chartify ()
   "Formats a marked area into a pretty chart."
@@ -106,6 +136,7 @@ OMG LIKE THREE WHOLE LINE
   (interactive)
   (let ((to-add (cond ((eq major-mode 'emacs-lisp-mode) "(defun ")
 		      ((eq major-mode 'scheme-mode) "(define (")
+		      ((eq major-mode 'js-mode) "function ")
 		      ("(def"))))
     (insert to-add)))
 
@@ -192,6 +223,8 @@ You MUST quote all argument lists to this function."
   "Returns its first argument."
   first)
 
+;; TEST
+
 ;; Underline Completer
 (defun underline-complete (item)
   "Given a string of length 1, draws a line with that string equal in length
@@ -222,7 +255,6 @@ Also, if the line above is blank, nothing will happen."
   (save-excursion
     (filter-buffer-substring (point-at-line-start) 
 			     (point-at-line-end)
-			     nil
 			     t)))
 
 (defun point-at-line-start ()

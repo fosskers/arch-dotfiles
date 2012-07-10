@@ -1,5 +1,17 @@
 Log of Various Fixes
 --------------------
+2012 Jun 25 - Added /usr/sbin to PATH.
+     	    - One of the following blows up my system when upgraded:
+	      -- e2fsprogs     (OK)
+	      -- filesystem    (OK)
+	      -- kmod          (NOT OKAY)
+	      -- systemd-tools (OK)
+            - `kmod 9-1` determined as the update that is exploding.
+	      It doesn't like nvidia. On booting an xserver it says it can't
+	      find a screen. Something about not being able to load the
+	      device `nvidia`.
+	      `kmod` upgrades will now be ignored by pacman.
+
 2012 Jun 06 - Changed shell to `fish`. Config file is located at:
      	      ~/.config/fish/config.fish
 
