@@ -15,7 +15,7 @@
       c-basic0offset 8)
 
 ;; Just in case.
-(mouse-wheel-mode -1)
+;; (mouse-wheel-mode -1)
 
 ;; Haskell mode!
 (load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
@@ -23,6 +23,10 @@
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
+
+;; PKGBUILD mode
+(autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
+(setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
 
 ;; Turn off blinking cursor.
 (when (fboundp 'blink-cursor-mode)

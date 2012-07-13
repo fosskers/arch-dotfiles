@@ -1,5 +1,11 @@
 Log of Various Fixes
 --------------------
+2012 Jul 10 - SUCCESSFULLY upgraded `b43-firmware`. No problems.
+     	    - SUCCESSFULLY upgraded the kernel and nvidia drivers!
+	      Kernel now at 3.4.4-2, nvidia at 302.17-1.
+	    - SUCCESSFULLY upgrade `kmod`. Now at 9-1.
+	    - Tested nvidia by playing Bastion a bit... seems quicker.
+
 2012 Jun 25 - Added /usr/sbin to PATH.
      	    - One of the following blows up my system when upgraded:
 	      -- e2fsprogs     (OK)

@@ -1,10 +1,6 @@
 ! urxvt settings
 URxvt.background : #202020
 URxvt.foreground : #999999
-! URxvt.font       : -*-*-*-*-*-*-14-*-*-*-*-*-*-*
-! URxvt.font       : xft:Terminus:size=10
-! URxvt.font       : xft:DejaVu Sans Mono:size=9
-! URxvt.font       : xft:Anonymous Pro
 URxvt.font       : xft:Inconsolata-g:bold:size=8, \
                    xft:IPAGothic,IPAゴシック
 URxvt.scrollBar  : False
@@ -12,7 +8,7 @@ URxvt.pointBlank : true
 URxvt.transparent: true
 URxvt.shading: 25
 
-! black
+! black #202020
 URxvt.color0  : #202020
 URxvt.color8  : #202020
 ! red

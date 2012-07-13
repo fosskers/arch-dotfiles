@@ -49,7 +49,7 @@ function h
 end
 
 function hi
-  ghci
+  ghci /home/colin/code/haskell/ColinPrelude/ColinPrelude.hs
 end
 
 function py
@@ -104,7 +104,7 @@ function mkcd
 end
 
 # REVAMPED COMMANDS
-function grep
+function grepc
   grep --colour $argv
 end
 
