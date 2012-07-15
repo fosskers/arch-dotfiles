@@ -7,7 +7,7 @@ set fish_greeting
 set -x EDITOR "emacs -nw"
 
 # PATH
-set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin'
+set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin' '/sbin'
 
 # RANDOM SHORTCUTS
 function c

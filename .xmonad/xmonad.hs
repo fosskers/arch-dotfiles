@@ -1,6 +1,7 @@
 import XMonad
 import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
+import XMonad.Hooks.ManageHelpers
 
 import Data.Monoid
 import System.Exit
@@ -71,11 +72,16 @@ myLayout = onWorkspace "9:Skyrim" nobordersLayout $ defaultLayouts
 myWorkspaces :: [String]
 myWorkspaces = ["1","2:web","3","4","5","6","7","8","9:Skyrim"]
 
--- This isn't working.
-myManageHook = composeAll
-               [ className =? "chromium" --> doShift "2:web"
-               , className =? "Skyrim" --> doShift "9:Skyrim"
-               ]
+--------
+-- HOOKS
+--------
+myManageHook = fmap not isDialog --> doF avoidMaster
+
+-- Focus is NOT shifted to new windows.
+avoidMaster :: W.StackSet i l a s sd -> W.StackSet i l a s sd
+avoidMaster = W.modify' $ \c -> case c of
+     W.Stack t [] (r:rs) ->  W.Stack r [] (t:rs)
+     otherwise           -> c
 
 ---------------
 -- KEY BINDINGS
@@ -84,7 +90,7 @@ myManageHook = composeAll
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- launch a terminal
-    [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
+    [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
 
     -- launch dmenu
     -- I CHANGED THIS 2011 OCT 15
@@ -115,7 +121,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_m     ), windows W.focusMaster  )
 
     -- Swap the focused window and the master window
-    , ((modm,               xK_Return), windows W.swapMaster)
+    , ((modm .|. shiftMask, xK_Return), windows W.swapMaster)
 
     -- Swap the focused window with the next window
     , ((modm .|. shiftMask, xK_j     ), windows W.swapDown  )
