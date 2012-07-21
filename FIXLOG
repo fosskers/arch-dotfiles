@@ -1,5 +1,10 @@
 Log of Various Fixes
 --------------------
+2012 Jul 15 - Internet still fucked.
+     	    - /lib successfully symlinked to /usr/lib.
+     	    - Fixed locale settings. I was missing en_US, and that was
+	      causing problems. 
+
 2012 Jul 10 - SUCCESSFULLY upgraded `b43-firmware`. No problems.
      	    - SUCCESSFULLY upgraded the kernel and nvidia drivers!
 	      Kernel now at 3.4.4-2, nvidia at 302.17-1.

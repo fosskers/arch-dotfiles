@@ -9,6 +9,9 @@ set -x EDITOR "emacs -nw"
 # PATH
 set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin' '/sbin'
 
+# This shouldn't be necessary.
+set -x LANG en_CA.utf8
+
 # RANDOM SHORTCUTS
 function c
   clear
@@ -104,12 +107,13 @@ function mkcd
 end
 
 # REVAMPED COMMANDS
-function grepc
-  grep --colour $argv
+
+function grep
+   command grep --colour $argv
 end
 
 function rm
-  rm -i $argv
+  command rm -i $argv
 end
 
 function gd
