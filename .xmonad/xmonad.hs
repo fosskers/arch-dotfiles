@@ -7,6 +7,12 @@ import Data.Monoid
 import System.Exit
 import System.Random (getStdGen,randomR,StdGen(..))
 
+-- For xmobar
+import XMonad.Hooks.DynamicLog  
+import XMonad.Hooks.ManageDocks  
+import XMonad.Util.Run  
+import System.IO 
+
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
@@ -14,6 +20,7 @@ import qualified Data.Map        as M
 main = do
   gen <- getStdGen
   let borderColour = randomColour gen
+  xmproc <- spawnPipe "/usr/bin/xmobar"
   xmonad $ defaultConfig
        { terminal           = myTerminal
        , modMask            = mod4Mask
@@ -21,9 +28,14 @@ main = do
        , focusFollowsMouse  = myFocusFollowsMouse
        , focusedBorderColor = borderColour
        , keys               = myKeys
-       , layoutHook         = myLayout
+       , layoutHook         = avoidStruts myLayout
        , workspaces         = myWorkspaces
        , manageHook         = myManageHook <+> manageHook defaultConfig
+       , logHook = dynamicLogWithPP xmobarPP  
+                   { ppOutput = hPutStrLn xmproc  
+                   , ppTitle  = xmobarColor "blue" "" . shorten 50   
+                   , ppLayout = const "" -- to disable layout info on xmobar
+                   }
        }
 
 ----------------
@@ -64,18 +76,18 @@ defaultLayouts = tiled ||| Mirror tiled ||| Full
 
 nobordersLayout = noBorders $ Full
 
-myLayout = onWorkspace "9:Skyrim" nobordersLayout $ defaultLayouts
+myLayout = onWorkspace "9:NoBorder" nobordersLayout $ defaultLayouts
 
 ---------------------
 -- WORKSPACE SETTINGS
 ---------------------
 myWorkspaces :: [String]
-myWorkspaces = ["1","2:web","3","4","5","6","7","8","9:Skyrim"]
+myWorkspaces = ["1","2","3","4","5","6","7","8","9:NoBorder"]
 
 --------
 -- HOOKS
 --------
-myManageHook = fmap not isDialog --> doF avoidMaster
+myManageHook = manageDocks <+> (fmap not isDialog --> doF avoidMaster)
 
 -- Focus is NOT shifted to new windows.
 avoidMaster :: W.StackSet i l a s sd -> W.StackSet i l a s sd

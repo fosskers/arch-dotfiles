@@ -1,5 +1,10 @@
 Log of Various Fixes
 --------------------
+2012 Aug 28 - Added Dropbox.
+
+2012 Aug 25 - `cpufrequtils` has been depreciated. Installed `cpupower`
+     	      in its place.
+
 2012 Jul 15 - Internet still fucked.
      	    - /lib successfully symlinked to /usr/lib.
      	    - Fixed locale settings. I was missing en_US, and that was

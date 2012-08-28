@@ -7,12 +7,28 @@ set fish_greeting
 set -x EDITOR "emacs -nw"
 
 # PATH
-set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin' '/sbin'
+set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin' '/sbin' '/home/colin/.cabal/bin'
+
+# BROWSER
+set -x BROWSER "chromium"
 
 # This shouldn't be necessary.
 set -x LANG en_CA.utf8
 
 # RANDOM SHORTCUTS
+function s
+  sensors
+end
+
+function gt
+  nvidia-settings -q gpucoretemp -t
+end
+
+function rlmt
+  sudo rc.d stop laptop-mode
+  sudo rc.d start laptop-mode
+end
+
 function c
   clear
 end
@@ -42,11 +58,26 @@ function ut
   tar -zxvf $argv
 end
 
+# Play a CD
+function pcd
+  mplayer cdda://
+end
+
+# Play a DVD
+function pdvd
+  mplayer -mouse-movements dvdnav://
+end
+
+# Eject a CD / DVD
 function ed
   eject /dev/sr0
 end
 
 # PROGRAM SHORTCUTS
+function adder
+  /home/colin/code/haskell/adder/adder $argv
+end
+
 function h
   ghc $argv -Wall
 end
@@ -118,6 +149,10 @@ end
 
 function gd
   git diff $argv --color
+end
+
+function ga
+  git commit -a
 end
 
 # MOUNTING SHORTCUTS

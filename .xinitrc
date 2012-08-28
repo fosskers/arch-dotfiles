@@ -11,6 +11,7 @@ mpd ~/.mpd.conf
 # hsetroot -fill /home/colin/backgrounds/rukia.jpg
 setwall -r /home/colin/backgrounds/
 xsetroot -cursor_name left_ptr
+xmobar &
 xmonad
 
 

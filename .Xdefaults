@@ -32,3 +32,8 @@ URxvt.color14 : #44bbbb
 ! white
 URxvt.color7  : #999999
 URxvt.color15 : #999999
+
+! Colouring for man pages.
+URxvt.colorIT : #87af5f
+URxvt.colorBD : #d7d7d7
+URxvt.colorUL : #87afd7

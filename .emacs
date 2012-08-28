@@ -11,8 +11,8 @@
 (column-number-mode 1)
 
 ;; Fix C indenting
-(setq c-default-style "bsd"
-      c-basic0offset 8)
+;;(setq c-default-style "bsd"
+;;      c-basic0offset 4)
 
 ;; Just in case.
 ;; (mouse-wheel-mode -1)

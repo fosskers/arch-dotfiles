@@ -6,7 +6,6 @@
 #        e.g. scp lol.txt colin@130.179.228.103:/home/ENG/colin
 # sudo modprobe coretemp && sensors -> Display various temperatures.
 # lsusb -> Lists all USB devices (internal and external)
-# cpufreq-info -> See processor info.
 # xfburn -> Disc burning.
 # figlet -> Text to large ascii.
 # Convert sjis to utf8 -> iconv -f sjis -t utf8 'filename'
