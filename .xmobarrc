@@ -1,0 +1,18 @@
+Config { font = "-*-terminusmod-medium-*-*-*-14-*-*-*-*-*-*-*"
+       , bgColor  = "black"
+       , fgColor  = "grey"
+       , position = Top
+       , lowerOnStart = True
+       , commands = [ Run Weather "RJFF" ["-t","<tempC>C/<rh>%","-L","10","-H","30","--normal","green","--high","red","--low","lightblue"] 36000
+                    , Run MultiCpu ["-t","<total0>% <total1>%", "-p", "2"] 30
+                    , Run CoreTemp ["-t", "<core0> : <core1>", "-L", "50", "-H", "65", "-l", "lightblue", "-n", "gray90", "-h", "red"] 50
+                    , Run Memory ["-t","<usedratio>%"] 30
+                    , Run Network "wlan0" ["-t","<rx>/<tx>","-L","0","-H","32","--normal","green","--high","red"] 10
+                    , Run Date "%a %B %_d %Y %I:%M:%S %p" "date" 50
+		    , Run BatteryP ["BAT0"] ["-t", "<watts>W (<left>%)"] 600
+                    , Run StdinReader
+                    ]
+       , sepChar  = "%"
+       , alignSep = "}{"
+       , template = "%StdinReader% }{ %wlan0% | %multicpu% %memory% | %coretemp% | %battery% | %RJFF% | <fc=#FFFFFF>%date%</fc>"
+       }

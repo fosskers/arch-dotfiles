@@ -1,6 +1,12 @@
 Log of Various Fixes
 --------------------
+2012 Aug 29 - Edited `/etc/acpi/handler.sh` slightly.
+     	      In theory, laptop mode should stop and start depending on
+	      whether a power cord is connected.
+	    - Reduced package cache to 3 of each package.
+
 2012 Aug 28 - Added Dropbox.
+     	    - Added xmobar. Configuration can be found at ~/.xmobarrc
 
 2012 Aug 25 - `cpufrequtils` has been depreciated. Installed `cpupower`
      	      in its place.
