@@ -1,5 +1,7 @@
 Log of Various Fixes
 --------------------
+2012 Aug 31 - INTERNET FINALLY FIXED!!! Using broadcom-wl now.
+
 2012 Aug 29 - Edited `/etc/acpi/handler.sh` slightly.
      	      In theory, laptop mode should stop and start depending on
 	      whether a power cord is connected.

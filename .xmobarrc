@@ -8,12 +8,13 @@ Config { font = "-*-terminusmod-medium-*-*-*-14-*-*-*-*-*-*-*"
                     , Run CoreTemp ["-t", "<core0> : <core1>", "-L", "50", "-H", "65", "-l", "lightblue", "-n", "gray90", "-h", "red"] 50
                     , Run Com "nvidia-settings" ["-q", "gpucoretemp", "-t"] "gt" 50
                     , Run Memory ["-t","<usedratio>%"] 30
-                    , Run Network "wlan0" ["-t","<rx>/<tx>","-L","0","-H","32","--normal","green","--high","red"] 10
+                    , Run Network "wifi0" ["-t","<rx>/<tx>","-L","0","-H","32","--normal","green","--high","red"] 10
                     , Run Date "%a %B %_d %Y %I:%M:%S %p" "date" 50
 		    , Run BatteryP ["BAT0"] ["-t", "<watts>W (<left>%)"] 600
+                    , Run MPD ["-t", "<title> (<album>) <bar>"] 50
                     , Run StdinReader
                     ]
        , sepChar  = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ %wlan0% | %multicpu% %memory% | %coretemp% : %gt% | %battery% | %RJFF% | <fc=#FFFFFF>%date%</fc>"
+       , template = "%StdinReader% }{ %mpd% | %wifi0% | %multicpu% %memory% | %coretemp% : %gt% | %battery% | %RJFF% | <fc=#FFFFFF>%date%</fc>"
        }
