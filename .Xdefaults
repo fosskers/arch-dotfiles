@@ -37,3 +37,11 @@ URxvt.color15 : #999999
 URxvt.colorIT : #87af5f
 URxvt.colorBD : #d7d7d7
 URxvt.colorUL : #87afd7
+
+! urxvt-perls
+URxvt.perl-ext-common:      default,clipboard,url-select,keyboard-select
+URxvt.url-select.launcher:  chromium
+URxvt.url-select.underline: true
+URxvt.keysym.M-u:           perl:url-select:select_next
+URxvt.keysym.M-Escape:      perl:keyboard-select:activate
+URxvt.keysym.M-s:           perl:keyboard-select:search

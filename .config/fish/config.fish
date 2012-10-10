@@ -9,6 +9,8 @@ set -x EDITOR "emacs -nw"
 # PATH
 set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin' '/sbin' '/home/colin/.cabal/bin'
 
+set PATH (find $PATH -type d)
+
 # BROWSER
 set -x BROWSER "chromium"
 
@@ -16,6 +18,14 @@ set -x BROWSER "chromium"
 set -x LANG en_CA.utf8
 
 # RANDOM SHORTCUTS
+function zzz
+  sudo systemctl suspend
+end
+
+function ha
+  cd /home/colin/code/haskell/aura/
+end
+
 function s
   sensors
 end
@@ -39,11 +49,11 @@ function cl
 end
 
 function r
-  sudo /sbin/reboot
+  sudo systemctl reboot
 end
 
 function p
-  sudo /sbin/poweroff
+  sudo systemctl poweroff
 end
 
 function hdoc
@@ -140,7 +150,7 @@ end
 # REVAMPED COMMANDS
 
 function grep
-   command grep --colour $argv
+   command grep -n --colour $argv
 end
 
 function rm
@@ -152,7 +162,7 @@ function gd
 end
 
 function ga
-  git commit -a
+  git commit -a $argv
 end
 
 # MOUNTING SHORTCUTS

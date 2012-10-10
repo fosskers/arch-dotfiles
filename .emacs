@@ -37,7 +37,7 @@
 (setq split-width-threshold 0)
 
 ;; Is this safe?
-(setq max-lisp-eval-depth 1000)
+(setq max-lisp-eval-depth 1500)
 
 ;;
 ; CUSTOM FUNCTIONS

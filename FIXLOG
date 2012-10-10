@@ -1,5 +1,11 @@
 Log of Various Fixes
 --------------------
+2012 Oct 10 - Wiped and reinstalled ghc. Version 7.6 was causing some
+     	      funky installation errors. Building aura was also failing.
+
+2012 Sep 15 - Replaced initscripts with systemd.
+     	      Suspend the system with `systemctl suspend`.
+
 2012 Aug 31 - INTERNET FINALLY FIXED!!! Using broadcom-wl now.
 
 2012 Aug 29 - Edited `/etc/acpi/handler.sh` slightly.
