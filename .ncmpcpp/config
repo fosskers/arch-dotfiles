@@ -291,7 +291,7 @@ progressbar_look = "▓▒░"
 #
 #fancy_scrolling = "yes"
 #
-#cyclic_scrolling = "no"
+cyclic_scrolling = "yes"
 #
 #lines_scrolled = "2"
 #

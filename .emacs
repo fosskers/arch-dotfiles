@@ -42,6 +42,14 @@
 ;;
 ; CUSTOM FUNCTIONS
 ;;
+(defun flip-lines ()
+  "Flips the order of the lines in a marked area."
+  (interactive)
+  (let* ((text (filter-buffer-substring (mark) (point) 'DELETETHATSHIT))
+	 (lines (string-unlines (reverse (string-lines text)))))
+    (insert lines)))
+
+(global-set-key (kbd "C-c C-f") 'flip-lines)
 
 (defun insert-braces ()
   "Inserts braces for quicker coding in C-like languages."
@@ -78,7 +86,7 @@
   "Formats a marked area into a pretty chart."
   (interactive)
   (let* ((text (filter-buffer-substring (mark) (point) 'DELETETHATSHIT))
-	 (lines (split-string text "[\n]+"))
+	 (lines (string-lines text))
 	 (longest (longest-word (string-words (string-unwords lines))))
 	 (all-words-by-line (mapcar 'string-words lines)))
     (print-all-chart-rows longest all-words-by-line)))
@@ -317,7 +325,7 @@ BUG: Recursion depth limit destroys this."
   "Converts a string to a list of each char as a string."
   (mapcar 'string (string-to-list item)))
 
-(defun spptring-reverse (item)
+(defun string-reverse (item)
   "Reverses all the chars in a given string."
   (apply 'string (reverse (string-to-list item))))
 
@@ -337,6 +345,16 @@ BUG: Recursion depth limit destroys this."
 (defun string-unwords (words)
   "Given a list of strings, fuses them via whitespace to make a sentence."
   (mapconcat 'identity words " "))
+
+(defun string-lines (lines)
+  "Given a string with newlines, splits it by line."
+  (split-string lines "[\n]+"))
+
+;(string-unlines (string-lines "this is\nmy string\nbaby baby"))
+
+(defun string-unlines (line-list)
+  "Given a list of strings, joins them via newline chars."
+  (mapconcat 'identity line-list "\n")) 
 
 (defun stripr (line)
   "Strips trailing whitespace."

@@ -11,6 +11,9 @@ set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin' '/sbin' '/home/colin/
 
 set PATH (find $PATH -type d)
 
+# PACMAN
+set -x -U PACMAN 'pacman-color'
+
 # BROWSER
 set -x BROWSER "chromium"
 
