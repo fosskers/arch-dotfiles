@@ -4,12 +4,14 @@
 set fish_greeting
 
 # EDITOR
-set -x EDITOR "emacs -nw"
+set -x EDITOR "emacs"
 
 # PATH
 set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin' '/sbin' '/home/colin/.cabal/bin'
 
 set PATH (find $PATH -type d)
+
+set -x PYTHONPATH '/home/colin/code/lib/pymodules/'
 
 # PACMAN
 set -x -U PACMAN 'pacman-color'
@@ -21,8 +23,8 @@ set -x BROWSER "chromium"
 set -x LANG en_CA.utf8
 
 # RANDOM SHORTCUTS
-function zzz
-  sudo systemctl suspend
+function partners
+  python2 /home/colin/code/python/teachingprogs/partners.py
 end
 
 function ha
@@ -84,6 +86,11 @@ end
 # Eject a CD / DVD
 function ed
   eject /dev/sr0
+end
+
+# Pick
+function pick
+  python2 ~/code/python/pygamestuff/name-star/name-star.py $argv
 end
 
 # PROGRAM SHORTCUTS
@@ -183,6 +190,22 @@ end
 
 function ummd
   umount ~/mnt/METROIDRIVE
+end
+
+function msd
+  mount ~/mnt/sd
+end
+
+function umsd
+  umount ~/mnt/sd
+end
+
+function mk
+  mount ~/mnt/kindle
+end
+
+function umk
+  umount ~/mnt/kindle
 end
 
 function pm

@@ -13,9 +13,14 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Util.Run  
 import System.IO 
 
+-- For Fancy Borders
+--import XMonad.Layout.Tabbed
+--import FancyBorders
+
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
+---
 
 main = do
   gen <- getStdGen
@@ -68,6 +73,11 @@ myBorderWidth = 1
 -- LAYOUT SETTINGS
 ------------------
 defaultLayouts = tiled ||| Mirror tiled ||| Full
+{-
+defaultLayouts = smartBorders (tabbed shrinkText tabbedTheme) |||
+                 defaultFancyBorders tiled |||
+                 defaultFancyBorders (Mirror tiled)
+-}
     where 
       tiled = Tall nmast delta ratio  -- All windows will spaced evenly.
       nmast = 1                       -- Number of windows in master pane.

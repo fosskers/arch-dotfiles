@@ -4,8 +4,9 @@ Config { font = "-*-terminusmod-medium-*-*-*-14-*-*-*-*-*-*-*"
        , position = Top
        , lowerOnStart = True
        , commands = [ Run Weather "RJFF" ["-t","<tempC>C/<rh>%","-L","10","-H","30","--normal","green","--high","red","--low","lightblue"] 36000
-                    , Run MultiCpu ["-t","C0: <total0>% C1: <total1>%", "-p", "2"] 30
-                    , Run CoreTemp ["-t", "<core0> : <core1>", "-L", "50", "-H", "65", "-l", "lightblue", "-n", "gray90", "-h", "red"] 50
+                    , Run MultiCpu ["-t","CPU <total0>% <total1>%", "-p", "2"] 30
+		    , Run CpuFreq ["-t", "FREQ <cpu0> <cpu1>", "-L", "0", "-H", "2", "-l", "lightblue", "-n","white", "-h", "red"] 50
+                    , Run CoreTemp ["-t", "TEMP <core0> <core1>", "-L", "50", "-H", "65", "-l", "lightblue", "-n", "gray90", "-h", "red"] 50
                     , Run Com "nvidia-settings" ["-q", "gpucoretemp", "-t"] "gt" 50
                     , Run Memory ["-t","R: <usedratio>%"] 30
                     , Run Network "wifi0" ["-t","<rx>/<tx>","-L","0","-H","32","--normal","green","--high","red"] 10
@@ -17,5 +18,5 @@ Config { font = "-*-terminusmod-medium-*-*-*-14-*-*-*-*-*-*-*"
                     ]
        , sepChar  = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ %mpd% | %wifi0wi% %wifi0% | %multicpu% %memory% | %coretemp% : %gt% | %battery% | %RJFF% | <fc=#FFFFFF>%date%</fc>"
+       , template = "%StdinReader% }{ %mpd% | %wifi0wi% %wifi0% | %multicpu% %memory% | %cpufreq% | %coretemp% : %gt% | %battery% | %RJFF% | <fc=#FFFFFF>%date%</fc>"
        }

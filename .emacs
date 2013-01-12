@@ -21,6 +21,7 @@
 (load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
@@ -42,14 +43,31 @@
 ;;
 ; CUSTOM FUNCTIONS
 ;;
+(defun numbered-list ()
+  "Takes a set of lines and turns it into a numbered list."
+  (interactive)
+  (defun number (curr rest)
+    (if (null rest)
+	nil
+      (let* ((as-s  (int-to-string curr))
+	     (fused (concat as-s ". " (car rest))))
+	(cons fused (number (1+ curr) (cdr rest))))))
+  (let ((lines (lines-from-region)))
+    (insert (string-unlines (number 1 lines)))))
+
+(global-set-key (kbd "C-c C-n") 'numbered-list)
+
 (defun flip-lines ()
   "Flips the order of the lines in a marked area."
   (interactive)
-  (let* ((text (filter-buffer-substring (mark) (point) 'DELETETHATSHIT))
-	 (lines (string-unlines (reverse (string-lines text)))))
-    (insert lines)))
+  (insert (string-unlines (reverse (lines-from-region)))))
 
 (global-set-key (kbd "C-c C-f") 'flip-lines)
+
+(defun lines-from-region ()
+  "Grabs lines from a region."
+  (let ((text (filter-buffer-substring (mark) (point) 'DELETE)))
+    (string-lines text)))
 
 (defun insert-braces ()
   "Inserts braces for quicker coding in C-like languages."

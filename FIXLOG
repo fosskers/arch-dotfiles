@@ -1,5 +1,8 @@
 Log of Various Fixes
 --------------------
+2012 Nov 03 - Fixed exploded system.
+     	      Have added `modprobe.black=pata_acpi` to kernel command line.
+
 2012 Oct 10 - Wiped and reinstalled ghc. Version 7.6 was causing some
      	      funky installation errors. Building aura was also failing.
 

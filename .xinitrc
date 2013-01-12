@@ -7,8 +7,10 @@ export XMODIFIERS=@im='uim'
 # MUSIC PLAYER DAEMON
 mpd ~/.mpd.conf
 
+# ENLIGHTENMENT 17 - Added 2012 Dec 26
+#exec enlightenment_start
+
 # STUFF FOR XMONAD AND THE XSERVER
-# hsetroot -fill /home/colin/backgrounds/rukia.jpg
 setwall -r /home/colin/backgrounds/
 xsetroot -cursor_name left_ptr
 xmobar &
