@@ -1,5 +1,8 @@
 Log of Various Fixes
 --------------------
+2013 Jan 20 - Added visualizations to ncmpcpp by adding entries to:
+     	      ~/.ncmpcpp/config  and  ~/.mpd.conf
+
 2012 Nov 03 - Fixed exploded system.
      	      Have added `modprobe.black=pata_acpi` to kernel command line.
 

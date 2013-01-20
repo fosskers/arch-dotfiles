@@ -80,7 +80,7 @@ end
 
 # Play a DVD
 function pdvd
-  mplayer -mouse-movements dvdnav://
+  mplayer -mouse-movements dvdnav:// -nocache
 end
 
 # Eject a CD / DVD

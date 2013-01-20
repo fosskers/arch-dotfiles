@@ -25,7 +25,7 @@ import qualified Data.Map        as M
 main = do
   gen <- getStdGen
   let borderColour = randomColour gen
-  xmproc <- spawnPipe "/usr/bin/xmobar"
+  xmproc <- spawnPipe "/usr/local/bin/xmobar"
   xmonad $ defaultConfig
        { terminal           = myTerminal
        , modMask            = mod4Mask
