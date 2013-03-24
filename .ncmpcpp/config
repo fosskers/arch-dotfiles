@@ -24,7 +24,7 @@ mpd_music_dir = "/home/colin/music"
 # Added 2013 Jan 20
 visualizer_fifo_path = "/home/colin/.mpd/mpd.fifo"
 visualizer_output_name = "my_fifo"
-visualizer_sync_interval = "1"
+visualizer_sync_interval = "10"
 visualizer_type = "wave" (spectrum/wave)
 #visualizer_type = "spectrum" (spectrum/wave)
 
@@ -450,7 +450,7 @@ progressbar_color = "yellow"
 #
 #active_column_color = "red"
 #
-#visualizer_color = "yellow"
+visualizer_color = "cyan"
 #
 #window_border_color = "green"
 #

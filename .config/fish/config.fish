@@ -19,10 +19,11 @@ set -x -U PACMAN 'pacman-color'
 # BROWSER
 set -x BROWSER "chromium"
 
-# This shouldn't be necessary.
-set -x LANG en_CA.utf8
-
 # RANDOM SHORTCUTS
+function epc
+  sudo emacs /etc/pacman.conf
+end
+
 function partners
   python2 /home/colin/code/python/teachingprogs/partners.py
 end
@@ -51,6 +52,16 @@ end
 function cl
   clear
   ls
+end
+
+function cla
+  clear
+  ls -a
+end
+
+function cll
+  clear
+  ls -l
 end
 
 function r

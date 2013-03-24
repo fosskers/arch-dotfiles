@@ -1,114 +1,146 @@
+{-# LANGUAGE LambdaCase #-}
+
 import XMonad
+
+-- LAYOUTS
+import XMonad.Layout.Spacing
+import XMonad.Layout.Fullscreen 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
+import XMonad.Layout.SimplestFloat
+import XMonad.Layout.ThreeColumns
+import XMonad.Layout.ResizableTile
+import XMonad.Layout.Circle
+import XMonad.Layout.Spiral
+import XMonad.Actions.GridSelect
+
+-- WINDOW RULES
+import XMonad.ManageHook
+
+-- KEYBOARD & MOUSE CONFIG
+import XMonad.Util.EZConfig
+import XMonad.Actions.FloatKeys
+import Graphics.X11.ExtraTypes.XF86
+
+-- STATUS BAR
+import XMonad.Hooks.DynamicLog hiding (xmobar, xmobarPP, xmobarColor, sjanssenPP, byorgeyPP)
+import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.SetWMName
+import XMonad.Hooks.UrgencyHook
+import XMonad.Util.Dmenu
 
-import Data.Monoid
-import System.Exit
-import System.Random (getStdGen,randomR,StdGen(..))
+--import XMonad.Hooks.FadeInactive
+import XMonad.Hooks.EwmhDesktops hiding (fullscreenEventHook)
+import System.IO (hPutStrLn)
 
--- For xmobar
-import XMonad.Hooks.DynamicLog  
-import XMonad.Hooks.ManageDocks  
-import XMonad.Util.Run  
-import System.IO 
+--import XMonad.Operations
+import XMonad.Util.Run (spawnPipe)
+import XMonad.Actions.CycleWS  -- nextWS, prevWS
+import Data.List  -- clickable workspaces
 
--- For Fancy Borders
---import XMonad.Layout.Tabbed
---import FancyBorders
+import System.Exit (exitSuccess)
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
 ---
 
-main = do
-  gen <- getStdGen
-  let borderColour = randomColour gen
-  xmproc <- spawnPipe "/usr/local/bin/xmobar"
-  xmonad $ defaultConfig
-       { terminal           = myTerminal
-       , modMask            = mod4Mask
-       , borderWidth        = myBorderWidth
-       , focusFollowsMouse  = myFocusFollowsMouse
-       , focusedBorderColor = borderColour
-       , keys               = myKeys
-       , layoutHook         = avoidStruts myLayout
-       , workspaces         = myWorkspaces
-       , manageHook         = myManageHook <+> manageHook defaultConfig
-       , logHook = dynamicLogWithPP xmobarPP  
-                   { ppOutput = hPutStrLn xmproc  
-                   , ppTitle  = xmobarColor "blue" "" . shorten 50   
-                   , ppLayout = const "" -- to disable layout info on xmobar
-                   }
-       }
-
-----------------
--- RANDOM COLOUR
-----------------
-randomColour :: StdGen -> String
-randomColour gen = '#' : take 6 (yieldRandoms gen hexValues)
-
-hexValues :: String
-hexValues = "0123456789abcdef"
-
--- Infinitely yields a random value from a given list.
-yieldRandoms :: StdGen -> [a] -> [a]
-yieldRandoms _ []   = []
-yieldRandoms gen xs = (xs !! pos) : yieldRandoms gen' xs
-    where (pos,gen') = randomR (0, length xs - 1) gen
-
--------------------
--- TRIVIAL SETTINGS
--------------------
-myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = False
-
-myTerminal :: String
-myTerminal = "urxvt"
-
-myBorderWidth = 1
-
-------------------
--- LAYOUT SETTINGS
-------------------
-defaultLayouts = tiled ||| Mirror tiled ||| Full
-{-
-defaultLayouts = smartBorders (tabbed shrinkText tabbedTheme) |||
-                 defaultFancyBorders tiled |||
-                 defaultFancyBorders (Mirror tiled)
--}
+myLayout = tiled ||| Mirror tiled ||| Full
     where 
       tiled = Tall nmast delta ratio  -- All windows will spaced evenly.
       nmast = 1                       -- Number of windows in master pane.
       ratio = 1 / 2                   -- Size of master pane.
       delta = 3 / 100                 -- % of screen to increment when resizing.  
 
+{-
+myLayout = onWorkspace   (myWorkspaces !! 0) (avoidStruts (Circle ||| tiled) ||| fullTile)
+	   $ onWorkspace (myWorkspaces !! 1) (avoidStruts (Circle ||| noBorders (fullTile)) ||| fullScreen)
+	   $ onWorkspace (myWorkspaces !! 2) (avoidStruts simplestFloat)
+	   $ avoidStruts (tiledSpace  ||| tiled ||| fullTile) ||| fullScreen
+    where
+      tiled            = spacing 5  $ ResizableTall nmaster delta ratio [] 
+      tiledSpace       = spacing 60 $ ResizableTall nmaster delta ratio [] 
+      tile3            = spacing 5  $ ThreeColMid nmaster delta ratio
+      fullScreen       = noBorders  $ fullscreenFull Full
+      fullTile         = ResizableTall nmaster delta ratio [] 
+      fullTile3	       = ThreeColMid nmaster delta ratio
+      borderlessTile   = noBorders fullTile
+      fullGoldenSpiral = spiral ratio
+      goldenSpiral     = spacing 5 $ spiral ratio
+      -- Default number of windows in master pane
+      nmaster = 1
+      -- Percent of the screen to increment when resizing
+      delta = 3 / 100
+      -- Default proportion of the screen taken up by main pane
+      ratio = toRational (2 / (1 + sqrt 5 :: Double)) 
+-}
+
+-- Give some workspaces no borders
 nobordersLayout = noBorders $ Full
 
-myLayout = onWorkspace "9:NoBorder" nobordersLayout $ defaultLayouts
+-- Declare workspaces and rules for applications
+myWorkspaces = clickable [ "^i(/home/colin/.xmonad/dzen2/arch.xbm) term"
+		         , "^i(/home/colin/.xmonad/dzen2/fs_01.xbm) web"	
+		         , "^i(/home/colin/.xmonad/dzen2/diskette.xbm) docs"
+		         , "^i(/home/colin/.xmonad/dzen2/pacman.xbm) games" ]
+    where clickable l = [ "^ca(1,xdotool key alt+" ++ show (i) ++ ")" ++ ws ++ "^ca()" |
+                          (i,ws) <- zip [1..] l ]
+			
+-- Need help with these...
+myManageHook = composeAll [ resource =? "dmenu"       --> doFloat
+			  , resource =? "chromium"    --> doShift (myWorkspaces !! 1)
+                          , resource =? "libreoffice" --> doShift (myWorkspaces !! 2)
+                          , resource =? "steam"       --> doShift (myWorkspaces !! 3) ]
 
----------------------
--- WORKSPACE SETTINGS
----------------------
-myWorkspaces :: [String]
-myWorkspaces = ["1","2","3","4","5","6","7","8","9:NoBorder"]
+newManageHook = myManageHook <+> manageHook defaultConfig <+> manageDocks 
 
---------
--- HOOKS
---------
-myManageHook = manageDocks <+> (fmap not isDialog --> doF avoidMaster)
+myLogHook h = dynamicLogWithPP $ defaultPP {
+		  ppCurrent         = dzenColor foreground background . pad
+		, ppVisible         = dzenColor white0 background . pad
+		, ppHidden          = dzenColor white0 background . pad
+		, ppHiddenNoWindows = dzenColor black0 background . pad
+		, ppWsSep           = ""
+		, ppSep             = "    "
+		, ppOrder           = \(ws:l:t:_) -> [ws,l]
+		, ppOutput          = hPutStrLn h
+		, ppLayout          = wrap "^ca(1,xdotool key alt+space)" "^ca()" . dzenColor white1 background .
+		                      (\case
+				         "Full"                    -> "^i(/home/colin/.xmonad/dzen2/layout_full.xbm)"
+				         "Spacing 5 ResizableTall" -> "^i(/home/colin/.xmonad/dzen2/layout_tall.xbm)"
+				         "ResizableTall"           -> "^i(/home/colin/.xmonad/dzen2/layout_tall.xbm)"
+				         "SimplestFloat"           -> "^i(/home/colin/.xmonad/dzen2/mouse_01.xbm)"
+				         "Circle"                  -> "^i(/home/colin/.xmonad/dzen2/full.xbm)"
+				         _                         -> "^i(/home/colin/.xmonad/dzen2/grid.xbm)" ) }
 
--- Focus is NOT shifted to new windows.
-avoidMaster :: W.StackSet i l a s sd -> W.StackSet i l a s sd
-avoidMaster = W.modify' $ \c -> case c of
-     W.Stack t [] (r:rs) ->  W.Stack r [] (t:rs)
-     otherwise           -> c
+myXmonadBar = "dzen2 -x '0' -y '0' -h '12' -w '700' -ta 'l' -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn " ++ myFont
 
----------------
--- KEY BINDINGS
----------------
--- TAKEN FROM SAMPLE SOURCE IN ~/usr/share/xmonad-0.9.2/man/xmonad.hs
+myStatusBar = "conky -qc /home/colin/.xmonad/.conky_dzen | dzen2 -x '700' -w '666' -h '12' -ta 'r' -bg '" ++ background ++ "' -fg '" ++ foreground ++ "' -y '0' -fn " ++ myFont
+
+main = do
+  dzenLeftBar 	<- spawnPipe myXmonadBar
+  dzenRightBar	<- spawnPipe myStatusBar
+  xmonad $ ewmh defaultConfig
+             { terminal           = myTerminal
+	     , borderWidth        = 1
+	     , normalBorderColor  = black0
+	     , focusedBorderColor = magenta0
+	     , modMask            = mod4Mask
+             , keys               = myKeys
+	     , layoutHook         = avoidStruts myLayout
+	     , workspaces         = myWorkspaces
+	     , manageHook         = newManageHook
+	     , handleEventHook    = fullscreenEventHook <+> docksEventHook
+	     , startupHook        = setWMName "LG3D"
+	     , logHook            = myLogHook dzenLeftBar }
+
+myTerminal 	= "urxvt"
+myFont		= "-*-lime-*-*-*-*-*-*-*-*-*-*-*-*"
+--myFont		= "-*-drift-*-*-*-*-*-*-*-*-*-*-*-*"
+--myFont		= "xft:inconsolata:size=10"
+--myFont		= "xft:droid sans mono:size=9"
+--myFont		= "-*-cure-*-*-*-*-*-*-*-*-*-*-*-*"
+
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- launch a terminal
@@ -173,7 +205,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
 
     -- Quit xmonad
-    , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
+    , ((modm .|. shiftMask, xK_q     ), io exitSuccess)
 
     -- Restart xmonad
     , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
@@ -197,3 +229,29 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
         | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
+background= "#000000"
+foreground= "#ffffff"
+
+black0= "#343638"
+black1= "#404040"
+
+red0=  "#2f468e"
+red1=  "#7791e0"
+
+green0= "#424242"
+green1= "#828a8c"
+
+yellow0=  "#6b8ba3"
+yellow1= "#8ebdde"
+
+blue0=  "#1c4582"
+blue1= "#5365a6"
+
+magenta0=  "#74636d"
+magenta1= "#927d9e"
+
+cyan0=  "#556c85"
+cyan1= "#6e98b8"
+
+white0=  "#b2b2b2"
+white1= "#bdbdbd"

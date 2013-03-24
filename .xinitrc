@@ -13,5 +13,6 @@ mpd ~/.mpd.conf
 # STUFF FOR XMONAD AND THE XSERVER
 setwall -r /home/colin/backgrounds/
 xsetroot -cursor_name left_ptr
-xmobar &
-xmonad
+#xmobar &
+#xmonad
+exec dbus-launch xmonad

@@ -1,5 +1,13 @@
 Log of Various Fixes
 --------------------
+2013 Mar 24 - [haskell] switched to [haskell-core]
+            - Switched to dzen2/conky.
+
+2013 Feb 05 - Upgraded to ghc 7.6.2, had to reinstall all my haskell stuff.
+     	      X11 being funny...?
+
+2013 Jan 30 - Added `F1` as an IM switcher in UIM.
+
 2013 Jan 20 - Added visualizations to ncmpcpp by adding entries to:
      	      ~/.ncmpcpp/config  and  ~/.mpd.conf
 
