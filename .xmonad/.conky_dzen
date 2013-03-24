@@ -1,0 +1,18 @@
+short_units yes
+background yes
+out_to_console yes
+out_to_x no
+# Update interval in seconds
+update_interval 5
+update_interval_on_battery 30
+ 
+TEXT
+^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/scorpio.xbm) ^fg(\#cdcdcd)${top name 1} ${top name 2}\
+^ca(1,/home/colin/.xmonad/scripts/dzen_network.sh)^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/wifi_01.xbm) ^fg(\#828a8c)${wireless_essid wifi0} ${downspeedf wifi0} / ${upspeedf wifi0}   ^ca()\
+^ca(1,/home/colin/.xmonad/scripts/dzen_music.sh) $if_mpd_playing^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/note.xbm) ^fg(\#828a8c)"${mpd_title}" by ${mpd_artist}$endif   ^ca()\
+^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/cpu.xbm) ^fg(\#828a8c)${cpu cpu1}% ${cpu cpu2}%   \
+^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/cpu.xbm) ^fg(\#cdcdcd)${freq cpu1}^fg(\#828a8c)MHz ^fg(\#cdcdcd)${freq cpu1}^fg(\#828a8c)MHz   \
+^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/mem.xbm) ^fg(\#828a8c)${memperc}%   \
+^ca(1,/home/colin/.xmonad/scripts/dzen_battery.sh) ^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/bat_full_01.xbm) ^fg(\#828a8c)${battery_percent}%   ^ca()\
+^ca(1,/home/colin/.xmonad/scripts/dzen_date.sh) ^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/clock.xbm) ^fg(\#cdcdcd)${time %a %b %d %I:%M %P}   ^ca()\
+^ca(1,/home/colin/.xmonad/scripts/dzen_log.sh)^fg(\#556c85)^i(/home/colin/.xmonad/dzen2/info_01.xbm)^fg(\#828a8c)info^ca()

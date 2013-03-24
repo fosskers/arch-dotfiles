@@ -80,18 +80,19 @@ myLayout = onWorkspace   (myWorkspaces !! 0) (avoidStruts (Circle ||| tiled) |||
 nobordersLayout = noBorders $ Full
 
 -- Declare workspaces and rules for applications
-myWorkspaces = clickable [ "^i(/home/colin/.xmonad/dzen2/arch.xbm) term"
+myWorkspaces = clickable [ "^i(/home/colin/.xmonad/dzen2/arch_10x10.xbm) term"
 		         , "^i(/home/colin/.xmonad/dzen2/fs_01.xbm) web"	
 		         , "^i(/home/colin/.xmonad/dzen2/diskette.xbm) docs"
-		         , "^i(/home/colin/.xmonad/dzen2/pacman.xbm) games" ]
+		         , "^i(/home/colin/.xmonad/dzen2/pacman.xbm) games" 
+		         , "^i(/home/colin/.xmonad/dzen2/cat.xbm) etc" ]
     where clickable l = [ "^ca(1,xdotool key alt+" ++ show (i) ++ ")" ++ ws ++ "^ca()" |
                           (i,ws) <- zip [1..] l ]
 			
 -- Need help with these...
-myManageHook = composeAll [ resource =? "dmenu"       --> doFloat
-			  , resource =? "chromium"    --> doShift (myWorkspaces !! 1)
-                          , resource =? "libreoffice" --> doShift (myWorkspaces !! 2)
-                          , resource =? "steam"       --> doShift (myWorkspaces !! 3) ]
+myManageHook = composeAll [ resource =? "dmenu"    --> doFloat
+			  , resource =? "chromium" --> doShift (myWorkspaces !! 1)
+                          , fmap ("libreoffice" `isInfixOf`) className --> doShift (myWorkspaces !! 2)
+                          , fmap ("Steam" `isPrefixOf`) className --> doShift (myWorkspaces !! 3) ]
 
 newManageHook = myManageHook <+> manageHook defaultConfig <+> manageDocks 
 
@@ -101,7 +102,7 @@ myLogHook h = dynamicLogWithPP $ defaultPP {
 		, ppHidden          = dzenColor white0 background . pad
 		, ppHiddenNoWindows = dzenColor black0 background . pad
 		, ppWsSep           = ""
-		, ppSep             = "    "
+		, ppSep             = "   "
 		, ppOrder           = \(ws:l:t:_) -> [ws,l]
 		, ppOutput          = hPutStrLn h
 		, ppLayout          = wrap "^ca(1,xdotool key alt+space)" "^ca()" . dzenColor white1 background .
@@ -113,9 +114,9 @@ myLogHook h = dynamicLogWithPP $ defaultPP {
 				         "Circle"                  -> "^i(/home/colin/.xmonad/dzen2/full.xbm)"
 				         _                         -> "^i(/home/colin/.xmonad/dzen2/grid.xbm)" ) }
 
-myXmonadBar = "dzen2 -x '0' -y '0' -h '12' -w '700' -ta 'l' -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn " ++ myFont
+myXmonadBar = "dzen2 -x '0' -y '0' -h '12' -w '300' -ta 'l' -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn " ++ myFont
 
-myStatusBar = "conky -qc /home/colin/.xmonad/.conky_dzen | dzen2 -x '700' -w '666' -h '12' -ta 'r' -bg '" ++ background ++ "' -fg '" ++ foreground ++ "' -y '0' -fn " ++ myFont
+myStatusBar = "conky -qc /home/colin/.xmonad/.conky_dzen | dzen2 -x '300' -w '980' -h '12' -ta 'r' -bg '" ++ background ++ "' -fg '" ++ foreground ++ "' -y '0' -fn " ++ myFont
 
 main = do
   dzenLeftBar 	<- spawnPipe myXmonadBar
@@ -136,13 +137,8 @@ main = do
 
 myTerminal 	= "urxvt"
 myFont		= "-*-lime-*-*-*-*-*-*-*-*-*-*-*-*"
---myFont		= "-*-drift-*-*-*-*-*-*-*-*-*-*-*-*"
---myFont		= "xft:inconsolata:size=10"
---myFont		= "xft:droid sans mono:size=9"
---myFont		= "-*-cure-*-*-*-*-*-*-*-*-*-*-*-*"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
-
     -- launch a terminal
     [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
 
