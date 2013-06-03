@@ -53,32 +53,6 @@ myLayout = tiled ||| Mirror tiled ||| Full
       ratio = 1 / 2                   -- Size of master pane.
       delta = 3 / 100                 -- % of screen to increment when resizing.  
 
-{-
-myLayout = onWorkspace   (myWorkspaces !! 0) (avoidStruts (Circle ||| tiled) ||| fullTile)
-	   $ onWorkspace (myWorkspaces !! 1) (avoidStruts (Circle ||| noBorders (fullTile)) ||| fullScreen)
-	   $ onWorkspace (myWorkspaces !! 2) (avoidStruts simplestFloat)
-	   $ avoidStruts (tiledSpace  ||| tiled ||| fullTile) ||| fullScreen
-    where
-      tiled            = spacing 5  $ ResizableTall nmaster delta ratio [] 
-      tiledSpace       = spacing 60 $ ResizableTall nmaster delta ratio [] 
-      tile3            = spacing 5  $ ThreeColMid nmaster delta ratio
-      fullScreen       = noBorders  $ fullscreenFull Full
-      fullTile         = ResizableTall nmaster delta ratio [] 
-      fullTile3	       = ThreeColMid nmaster delta ratio
-      borderlessTile   = noBorders fullTile
-      fullGoldenSpiral = spiral ratio
-      goldenSpiral     = spacing 5 $ spiral ratio
-      -- Default number of windows in master pane
-      nmaster = 1
-      -- Percent of the screen to increment when resizing
-      delta = 3 / 100
-      -- Default proportion of the screen taken up by main pane
-      ratio = toRational (2 / (1 + sqrt 5 :: Double)) 
--}
-
--- Give some workspaces no borders
-nobordersLayout = noBorders $ Full
-
 -- Declare workspaces and rules for applications
 myWorkspaces = clickable [ "^i(/home/colin/.xmonad/dzen2/arch_10x10.xbm) term"
 		         , "^i(/home/colin/.xmonad/dzen2/fs_01.xbm) web"	
@@ -88,11 +62,15 @@ myWorkspaces = clickable [ "^i(/home/colin/.xmonad/dzen2/arch_10x10.xbm) term"
     where clickable l = [ "^ca(1,xdotool key alt+" ++ show (i) ++ ")" ++ ws ++ "^ca()" |
                           (i,ws) <- zip [1..] l ]
 			
--- Need help with these...
 myManageHook = composeAll [ resource =? "dmenu"    --> doFloat
 			  , resource =? "chromium" --> doShift (myWorkspaces !! 1)
+                          , resource =? "gimp"     --> doShift (myWorkspaces !! 2)
+                          , resource =? "anki"     --> doShift (myWorkspaces !! 2)
+                          , resource =? "evince"   --> doShift (myWorkspaces !! 2)
                           , fmap ("libreoffice" `isInfixOf`) className --> doShift (myWorkspaces !! 2)
-                          , fmap ("Steam" `isPrefixOf`) className --> doShift (myWorkspaces !! 3) ]
+                          , fmap ("Steam" `isPrefixOf`) className --> doShift (myWorkspaces !! 3)
+                          , resource =? "dolphin-emu" --> doShift (myWorkspaces !! 3)
+                          , resource =? "pystopwatch" --> doShift (myWorkspaces !! 4) ]
 
 newManageHook = myManageHook <+> manageHook defaultConfig <+> manageDocks 
 
@@ -119,12 +97,13 @@ myXmonadBar = "dzen2 -x '0' -y '0' -h '12' -w '300' -ta 'l' -fg '" ++ foreground
 myStatusBar = "conky -qc /home/colin/.xmonad/.conky_dzen | dzen2 -x '300' -w '980' -h '12' -ta 'r' -bg '" ++ background ++ "' -fg '" ++ foreground ++ "' -y '0' -fn " ++ myFont
 
 main = do
-  dzenLeftBar 	<- spawnPipe myXmonadBar
-  dzenRightBar	<- spawnPipe myStatusBar
+  dzenLeftBar  <- spawnPipe myXmonadBar
+  dzenRightBar <- spawnPipe myStatusBar
   xmonad $ ewmh defaultConfig
              { terminal           = myTerminal
 	     , borderWidth        = 1
 	     , normalBorderColor  = black0
+             , focusFollowsMouse  = False
 	     , focusedBorderColor = magenta0
 	     , modMask            = mod4Mask
              , keys               = myKeys
@@ -136,9 +115,10 @@ main = do
 	     , logHook            = myLogHook dzenLeftBar }
 
 myTerminal 	= "urxvt"
-myFont		= "-*-lime-*-*-*-*-*-*-*-*-*-*-*-*"
+myFont = "xft:lime:size=6"  --":bold:size=8"
+--myFont		= "-*-lime-*-*-*-*-*-*-*-*-*-*-*-*"
 
-myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
+myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
     -- launch a terminal
     [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
 

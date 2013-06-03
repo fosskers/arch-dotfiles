@@ -13,13 +13,14 @@ set PATH (find $PATH -type d)
 
 set -x PYTHONPATH '/home/colin/code/lib/pymodules/'
 
-# PACMAN
-set -x -U PACMAN 'pacman-color'
-
 # BROWSER
 set -x BROWSER "chromium"
 
 # RANDOM SHORTCUTS
+function hisp
+  /home/colin/code/haskell/hisp/hisp
+end
+
 function epc
   sudo emacs /etc/pacman.conf
 end

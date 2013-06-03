@@ -1,3 +1,8 @@
+;; lambda
+(global-set-key (kbd "M-l") (lambda () (interactive) (insert "\u03bb")))
+
+(electric-pair-mode +1)
+
 ;; Line by line scrolling
 (setq scroll-step 1)
 
