@@ -1,3 +1,6 @@
+;; Scheme mode for Hisp
+(add-to-list 'auto-mode-alist '("\\.hisp\\'" . scheme-mode))
+
 ;; lambda
 (global-set-key (kbd "M-l") (lambda () (interactive) (insert "\u03bb")))
 
@@ -23,7 +26,9 @@
 ;; (mouse-wheel-mode -1)
 
 ;; Haskell mode!
-(load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
+(require 'haskell-mode-autoloads)
+;(load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 
@@ -182,9 +187,22 @@ OMG LIKE THREE WHOLE LINE
   (interactive)
   (progn
     (save-excursion
-      (insert "NET:\nSalary:\nSavings:\nBills:\nTotal Spending:\n-Food:\n-Non-food:"))
-    (end-of-line)
-    (insert " ")))
+      (insert "(- (+ ; Salary
+      ; Reimbursment
+   )
+   85000  ; Savings
+   ; Bills
+   (+ ; Cell
+      ; Internet
+      ; Denki
+      ; Gas
+      ; Rent
+   )
+   ; Spending
+   (+ ; Food
+      ; Non-food
+   ))")
+    (end-of-line))))    
 
 (global-set-key (kbd "C-c C-t") 'bill-template)
 
@@ -348,6 +366,8 @@ BUG: Recursion depth limit destroys this."
   "Converts a string to a list of each char as a string."
   (mapcar 'string (string-to-list item)))
 
+; (string-to-string-list "this is a list")
+
 (defun string-reverse (item)
   "Reverses all the chars in a given string."
   (apply 'string (reverse (string-to-list item))))
@@ -369,9 +389,22 @@ BUG: Recursion depth limit destroys this."
   "Given a list of strings, fuses them via whitespace to make a sentence."
   (mapconcat 'identity words " "))
 
-(defun string-lines (lines)
-  "Given a string with newlines, splits it by line."
-  (split-string lines "[\n]+"))
+; Wish emacs lisp had pattern matching.
+;(defun string-lines (lines)
+;  "Given a string with newlines, splits it by line."
+;  (defun string-lines' (x acc)
+;    lines)
+;  (string-lines' 5 1))
+
+;(string-lines "lol")
+    
+;  (split-string lines "[\n]+"))
+
+; 
+; (string 100 101 102 103)
+; (equal 108 (car (string-to-list "lol")))
+; (string (car (string-to-list "lol")))
+; (string-lines "this is\n\ngreat")("this is" "great")
 
 ;(string-unlines (string-lines "this is\nmy string\nbaby baby"))
 
@@ -408,23 +441,12 @@ BUG: Recursion depth limit destroys this."
   "Determines if a number is even."
   (= 0 (% num 2)))
 
-; (evenp 2)
-; (evenp 5)
-
 (defun oddp (num)
   "Determines if a number is odd."
   (! (evenp num)))
-
-; (oddp 0) 
-; (oddp 1)
-; (oddp 2)
 
 (defun ! (bool)
   "True becomes nil, nil becomes true."
   (if bool
       nil
     t))
-
-; (! nil)
-; (! "lol")
-; (! 5)

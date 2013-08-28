@@ -18,7 +18,7 @@ set -x BROWSER "chromium"
 
 # RANDOM SHORTCUTS
 function hisp
-  /home/colin/code/haskell/hisp/hisp
+  /home/colin/code/haskell/hisp/hisp $argv
 end
 
 function epc

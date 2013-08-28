@@ -1,5 +1,8 @@
 Log of Various Fixes
 --------------------
+2013 Jul 01 - Fixed broken setup with latest Arch live cd.
+     	      The kernel and my nvidia packages weren't happy.
+
 2013 Mar 24 - [haskell] switched to [haskell-core]
             - Switched to dzen2/conky.
 

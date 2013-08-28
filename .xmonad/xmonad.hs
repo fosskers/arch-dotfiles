@@ -70,7 +70,7 @@ myManageHook = composeAll [ resource =? "dmenu"    --> doFloat
                           , fmap ("libreoffice" `isInfixOf`) className --> doShift (myWorkspaces !! 2)
                           , fmap ("Steam" `isPrefixOf`) className --> doShift (myWorkspaces !! 3)
                           , resource =? "dolphin-emu" --> doShift (myWorkspaces !! 3)
-                          , resource =? "pystopwatch" --> doShift (myWorkspaces !! 4) ]
+                          , resource =? "gat" --> doShift (myWorkspaces !! 4) ]
 
 newManageHook = myManageHook <+> manageHook defaultConfig <+> manageDocks 
 
