@@ -223,3 +223,11 @@ end
 function pm
   mount | column -t
 end
+
+function msfu
+  mount ~/mnt/sfusb
+end
+
+function umsfu
+  mount ~/mnt/sfusb
+end
