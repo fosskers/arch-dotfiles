@@ -17,6 +17,10 @@ set -x PYTHONPATH '/home/colin/code/lib/pymodules/'
 set -x BROWSER "chromium"
 
 # RANDOM SHORTCUTS
+function lw
+  wine "/home/colin/Desktop/LogicWorks 5/LogicWorks 5/LogicWorks.exe"
+end
+
 function hisp
   /home/colin/code/haskell/hisp/hisp $argv
 end
@@ -115,7 +119,7 @@ function h
 end
 
 function hi
-  ghci /home/colin/code/haskell/ColinPrelude/ColinPrelude.hs
+  ghci /home/colin/code/haskell/ColinPrelude/Colin.hs
 end
 
 function py
@@ -218,6 +222,14 @@ end
 
 function umk
   umount ~/mnt/kindle
+end
+
+function msfu
+  mount ~/mnt/sfusb
+end
+
+function umsfu
+  umount ~/mnt/sfusb
 end
 
 function pm

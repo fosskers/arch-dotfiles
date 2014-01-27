@@ -1,5 +1,25 @@
 Log of Various Fixes
 --------------------
+2013 Nov 17 - Got rid of ldconfig error messages by deleting:
+     	      /usr/lib32/libnvcuvid.so.319.23
+	      /usr/lib32/libnvidia-ml.so.319.23
+	      /usr/lib32/libnvidia-tls.so.319.23
+	      /usr/lib32/libnvidia-glcore.so.319.23
+	      /usr/lib32/libnvidia-cfg.so.319.23
+ 	      /usr/lib32/libcuda.so.319.23
+	      /usr/lib32/libGL.so.319.23
+	      Shouldn't be problem, as they belong to no package. Or rather,
+	      they belonged to an old version of nvidia that I've long since
+	      upgraded from (currently at 331.20 with 3.12 kernel).
+
+2013 Oct 24 - Added SFU arch mirror to mirrorlist.
+
+2013 Oct ?? - Added wicd-eduroam and set up eduroam connection at SFU.
+
+2013 Sep 21 - xmonad was giving a `executeFile: permission denied` error,
+     	      which after recompiling xmonad seemed to fix things.
+	      `xmonad --recompile` was the command.
+
 2013 Jul 01 - Fixed broken setup with latest Arch live cd.
      	      The kernel and my nvidia packages weren't happy.
 

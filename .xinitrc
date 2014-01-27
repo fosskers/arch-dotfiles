@@ -15,4 +15,5 @@ setwall -r /home/colin/backgrounds/
 xsetroot -cursor_name left_ptr
 #xmobar &
 #xmonad
-exec dbus-launch xmonad
+#exec dbus-launch xmonad
+xmonad
