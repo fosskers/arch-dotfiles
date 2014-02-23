@@ -1,6 +1,6 @@
-;; Scheme mode for Hisp
-(add-to-list 'auto-mode-alist '("\\.hisp\\'" . scheme-mode))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GENERAL SETTINGS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lambda
 (global-set-key (kbd "M-l") (lambda () (interactive) (insert "\u03bb")))
 
@@ -18,27 +18,6 @@
 ;; Show column number
 (column-number-mode 1)
 
-;; Fix C indenting
-;;(setq c-default-style "bsd"
-;;      c-basic0offset 4)
-
-;; Just in case.
-;; (mouse-wheel-mode -1)
-
-;; Haskell mode!
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
-(require 'haskell-mode-autoloads)
-;(load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
-(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-
-;; PKGBUILD mode
-(autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
-(setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
-
 ;; Turn off blinking cursor.
 (when (fboundp 'blink-cursor-mode)
   (blink-cursor-mode -1))
@@ -50,9 +29,44 @@
 ;; Is this safe?
 (setq max-lisp-eval-depth 1500)
 
-;;
-; CUSTOM FUNCTIONS
-;;
+;; What do these do?
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MODES
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Scheme mode for Hisp and Racket
+(add-to-list 'auto-mode-alist '("\\.hisp\\'" . scheme-mode))
+(require 'quack)
+;; (add-to-list 'auto-mode-alist '("\\.rkt\\'" . scheme-mode))
+
+;; Haskell mode
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
+(require 'haskell-mode-autoloads)
+;(load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
+(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+
+;; PKGBUILD mode
+(autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
+(setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CUSTOM FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun tex-block (name)
+  "Takes a block name and creates \begin{} and \end{} tags."
+  (interactive "sBlock name: ")
+  (progn
+    (insert (string-concat (list "\\begin{" name "}")))
+    (newline)
+    (save-excursion
+      (newline)
+      (insert (string-concat (list "\\end{" name "}"))))))
+
+(global-set-key (kbd "C-c b") 'tex-block)
+
 (defun numbered-list ()
   "Takes a set of lines and turns it into a numbered list."
   (interactive)
@@ -116,7 +130,7 @@
   (let* ((text (filter-buffer-substring (mark) (point) 'DELETETHATSHIT))
 	 (lines (string-lines text))
 	 (longest (longest-word (string-words (string-unwords lines))))
-	 (all-words-by-line (mapcar 'string-words lines)))
+	 (all-words-by-line (map 'string-words lines)))
     (print-all-chart-rows longest all-words-by-line)))
 	 
 (global-set-key (kbd "C-c C-c") 'chartify)
@@ -170,17 +184,36 @@ OMG LIKE THREE WHOLE LINE
 
 ; (print-chart-row 7 (list "yes" "boss" "shazam!"))
 
-(defun add-def ()
-  "Depending on what version of Lisp you're using, adds:
-`(defxx (' so you can get defining!"
-  (interactive)
-  (let ((to-add (cond ((eq major-mode 'emacs-lisp-mode) "(defun ")
-		      ((eq major-mode 'scheme-mode) "(define (")
-		      ((eq major-mode 'js-mode) "function ")
-		      ("(def"))))
-    (insert to-add)))
+(defun add-def (name)
+  "Quickly create a new function."
+  (interactive "sFunction name: ")
+  (let ((to-add (cond ((eq major-mode 'emacs-lisp-mode) (emacs-lisp-fun name))
+		      ((eq major-mode 'scheme-mode) (scheme-fun name))
+		      ((eq major-mode 'c-mode) (c-fun name))
+		      ((eq major-mode 'java-mode) (java-fun name))
+		      ((list "(def " "")))))
+    (progn
+      (insert (car to-add))
+      (save-excursion
+	(insert (car (cdr to-add)))))))
 
-(global-set-key (kbd "C-c C-d") 'add-def)
+(defun scheme-fun (name)
+  (list (string-concat (list "(define (" name))
+	"))"))
+
+(defun emacs-lisp-fun (name)
+  (list (string-concat (list "(defun " name " ("))
+	")"))
+
+(defun c-fun (name)
+  (list (string-concat (list name "("))
+	") {\n}"))
+
+(defun java-fun (name)
+  (list (string-concat (list "public static " name "("))
+	") {\n}"))
+
+(global-set-key (kbd "C-c d") 'add-def)
 
 (defun bill-template ()
   "Adds a template for a fresh month in my bills file."
@@ -326,9 +359,9 @@ Also, if the line above is blank, nothing will happen."
       (end-of-line)
       (point))))
 
-;;;;;;;;;;;;;;;;
-; LIST FUNCTIONS
-;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LIST FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun range (start end)
   "Produces a list of ints from `start' to `end' exclusive.
 BUG: Recursion depth limit destroys this."
@@ -350,12 +383,15 @@ BUG: Recursion depth limit destroys this."
 	t
       (list-elemp x (cdr items)))))
 
-;;;;;;;;;;;;;;;;;;
-; STRING FUNCTIONS
-;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; STRING FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun string-emptyp (item)
   "Deteremines if a given string is empty."
   (string= item ""))
+
+(defun string-concat (strings)
+  (mapconcat 'identity strings ""))
 
 (defun string-nth-char (n item)
   "Returns the nth char of a given string."
@@ -364,7 +400,7 @@ BUG: Recursion depth limit destroys this."
 
 (defun string-to-string-list (item)
   "Converts a string to a list of each char as a string."
-  (mapcar 'string (string-to-list item)))
+  (map 'string (string-to-list item)))
 
 ; (string-to-string-list "this is a list")
 
@@ -377,36 +413,21 @@ BUG: Recursion depth limit destroys this."
 (defun string-words (item)
   "Splits a string into a list of its words"
   (let ((spaces (list 32 12288)))
-    (mapcar (lambda (w) (apply 'string w))
-	    (foldr (lambda (x acc)
-		     (cond ((null acc) (list (list x)))
-			   ((list-elemp x spaces) (cons nil acc))
-			   ((cons (cons x (car acc)) (cdr acc)))))
-		   nil
-		   (string-to-list item)))))
+    (map (lambda (w) (apply 'string w))
+	 (foldr (lambda (x acc)
+		  (cond ((null acc) (list (list x)))
+			((list-elemp x spaces) (cons nil acc))
+			((cons (cons x (car acc)) (cdr acc)))))
+		nil
+		(string-to-list item)))))
 
 (defun string-unwords (words)
   "Given a list of strings, fuses them via whitespace to make a sentence."
   (mapconcat 'identity words " "))
 
-; Wish emacs lisp had pattern matching.
-;(defun string-lines (lines)
-;  "Given a string with newlines, splits it by line."
-;  (defun string-lines' (x acc)
-;    lines)
-;  (string-lines' 5 1))
-
-;(string-lines "lol")
-    
-;  (split-string lines "[\n]+"))
-
-; 
-; (string 100 101 102 103)
-; (equal 108 (car (string-to-list "lol")))
-; (string (car (string-to-list "lol")))
-; (string-lines "this is\n\ngreat")("this is" "great")
-
-;(string-unlines (string-lines "this is\nmy string\nbaby baby"))
+(defun string-lines (line-str)
+  "Given a string with newlines, splits it by line and returns a list."
+  (split-string line-str "\n" t))
 
 (defun string-unlines (line-list)
   "Given a list of strings, joins them via newline chars."
@@ -417,9 +438,9 @@ BUG: Recursion depth limit destroys this."
   (when (string-match "[ \t]*$" line)
     (replace-match "" nil nil line)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;
-; FUNCTIONAL PROGRAMMING
-;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FUNCTIONAL PROGRAMMING
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun foldl (f zero items)
   "Folds a list via a function `f' from left to right."
   (if (null items)
@@ -434,9 +455,27 @@ BUG: Recursion depth limit destroys this."
 
 (defalias 'map 'mapcar)
 
-;;;;;;;;;;;;;;
-; NUMBER STUFF
-;;;;;;;;;;;;;;
+(defun filter (p items)
+  "A classic filter function."
+  (if (p (car items))
+      (cons (car items) (filter p (cdr items)))
+    (filter p (cdr items))))
+
+(defun take (n items)
+  "Yields the first `n` items from a list."
+  (cond ((null items) nil)
+	((= 0 n) nil)
+	((cons (car items) (take (1- n) (cdr items))))))
+
+(defun drop (n items)
+  "Yields a list with the first `n` items removed."
+  (if (= 0 n)
+      items
+    (drop (1- n) (cdr items))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; NUMBER STUFF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun evenp (num)
   "Determines if a number is even."
   (= 0 (% num 2)))
@@ -450,3 +489,16 @@ BUG: Recursion depth limit destroys this."
   (if bool
       nil
     t))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(quack-programs (quote ("mzscheme" "bigloo" "csi" "csi -hygienic" "gosh" "gracket" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "racket" "racket -il typed/racket" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

@@ -241,5 +241,5 @@ function msfu
 end
 
 function umsfu
-  mount ~/mnt/sfusb
+  umount ~/mnt/sfusb
 end
