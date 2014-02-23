@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL SETTINGS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; lambda
+;; lambda character
 (global-set-key (kbd "M-l") (lambda () (interactive) (insert "\u03bb")))
 
 (electric-pair-mode +1)
@@ -10,7 +10,8 @@
 (setq scroll-step 1)
 
 ;; Enable backup files
-(setq make-backup-files t)  ;; Change t to nil to turn this off.
+;; Change t to nil to turn this off.
+(setq make-backup-files t)
 
 ;; Save backup files to this dir
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
@@ -68,16 +69,17 @@
 (global-set-key (kbd "C-c b") 'tex-block)
 
 (defun numbered-list ()
-  "Takes a set of lines and turns it into a numbered list."
+  "Numbers each line in a region."
   (interactive)
-  (defun number (curr rest)
-    (if (null rest)
-	nil
-      (let* ((as-s  (int-to-string curr))
-	     (fused (concat as-s ". " (car rest))))
-	(cons fused (number (1+ curr) (cdr rest))))))
-  (let ((lines (lines-from-region)))
-    (insert (string-unlines (number 1 lines)))))
+  (let* ((line-pairs (list-enumerate (lines-from-region)))
+	 (longest (length (int-to-string (car (list-last line-pairs))))))
+    (insert (string-unlines (map (lambda (pair)
+				   (let* ((num (int-to-string (car pair)))
+					  (diff (- longest (length num))))
+				     (string-concat (list (string-pad " " diff num)
+							  ". "
+							  (cdr pair)))))
+				 line-pairs)))))
 
 (global-set-key (kbd "C-c C-n") 'numbered-list)
 
@@ -92,20 +94,6 @@
   "Grabs lines from a region."
   (let ((text (filter-buffer-substring (mark) (point) 'DELETE)))
     (string-lines text)))
-
-(defun insert-braces ()
-  "Inserts braces for quicker coding in C-like languages."
-  (interactive)
-  (progn
-    (insert "{")
-    (newline-and-indent)
-    (save-excursion
-      (newline)
-      (insert "}")
-      (beginning-of-line)
-      (indent-according-to-mode))))
-
-(global-set-key (kbd "C-c [") 'insert-braces)
 
 (defun js-frame ()
   "Inserts basic HTML to be filled with Javascript."
@@ -135,17 +123,6 @@
 	 
 (global-set-key (kbd "C-c C-c") 'chartify)
 
-"
-TEST YEAH BABY WIN MOOSE
-THIS IS THE BEST EVER
-OMG LIKE THREE WHOLE LINE
-
-日本語　机　椅子
-自宅　爆発　物理的
-答え　無念　新幹線
-四字熟語　あら　大変
-"
-
 (defun longest-word (words)
   "Given a list of words, gives the length of the longest one."
   (foldl (lambda (acc word)
@@ -174,10 +151,10 @@ OMG LIKE THREE WHOLE LINE
       (insert "*")
     (let* ((word-len (string-width (car words)))
 	   (wid-diff (- cell-width word-len))
-	   (left-pad (replicate-string (/ wid-diff 2) " "))
+	   (left-pad (string-replicate (/ wid-diff 2) " "))
 	   (right-pad (if (evenp wid-diff)
 			  left-pad
-			(replicate-string (1+ (/ wid-diff 2)) " "))))
+			(string-replicate (1+ (/ wid-diff 2)) " "))))
       (progn
 	(insert "* " left-pad (car words) right-pad " ") 
 	(print-chart-row cell-width (cdr words))))))
@@ -206,7 +183,7 @@ OMG LIKE THREE WHOLE LINE
 	")"))
 
 (defun c-fun (name)
-  (list (string-concat (list name "("))
+  (list (string-concat (list "type " name "("))
 	") {\n}"))
 
 (defun java-fun (name)
@@ -214,30 +191,6 @@ OMG LIKE THREE WHOLE LINE
 	") {\n}"))
 
 (global-set-key (kbd "C-c d") 'add-def)
-
-(defun bill-template ()
-  "Adds a template for a fresh month in my bills file."
-  (interactive)
-  (progn
-    (save-excursion
-      (insert "(- (+ ; Salary
-      ; Reimbursment
-   )
-   85000  ; Savings
-   ; Bills
-   (+ ; Cell
-      ; Internet
-      ; Denki
-      ; Gas
-      ; Rent
-   )
-   ; Spending
-   (+ ; Food
-      ; Non-food
-   ))")
-    (end-of-line))))    
-
-(global-set-key (kbd "C-c C-t") 'bill-template)
 
 ;; Automatic right-parenthesis completer.
 (defun auto-parens ()
@@ -254,7 +207,7 @@ BUG: Parens found in string and comments affect the regex match count!!!"
 	    (message "You have %d too many parentheses already." (* (- 1) diff))
 	  (progn
 	    (goto-char end)
-	    (insert (replicate-string diff ")"))
+	    (insert (string-replicate diff ")"))
 	    (message "Inserted %d right parentheses." diff)))))))
 
 (global-set-key (kbd "C-c C-p") 'auto-parens)
@@ -276,41 +229,6 @@ appears in column zero. It's (point) is returned."
   "Determines if (point) is in column zero."
   (= 0 (current-column)))
 
-(defun replicate-string (n item)
-  "Fuses a string to itself `n' times."
-  (if (< n 1)
-      ""
-    (concat item (replicate-string (1- n) item))))
-
-; (replicate-string 5 "*")
-; (replicate-string 0 "*")
-
-; Is this used?
-(defun insert-replicated-string (n some-char)
-  "Writes a line made up of `some-char' of length `n'."
-  (interactive "p\nsSupply a char: ")
-  (insert (replicate-string n some-char)))
-
-;; Custom `progn'
-(defun my-progn (&rest funs)
-  "Takes a list of function calls and executes them 
-__while retaining a functional code structure__.
-You MUST quote all argument lists to this function."
-  (progn-work (reverse funs)))
-
-(defun progn-work (funs)
-  "Does the work."
-  (when funs
-    (apply (car (car funs))
-	   (discard-second (cdr (car funs))
-			   (progn-work (cdr funs))))))
-
-(defun discard-second (first second)
-  "Returns its first argument."
-  first)
-
-;; TEST
-
 ;; Underline Completer
 (defun underline-complete (item)
   "Given a string of length 1, draws a line with that string equal in length
@@ -325,7 +243,7 @@ Also, if the line above is blank, nothing will happen."
 	   (if (zerop len)
 	       (message "Line above is blank.")
 	     (let ((here (point-at-line-start))
-		   (underline (replicate-string len item)))		   
+		   (underline (string-replicate len item)))
 	       (progn
 		 (goto-char here)
 		 (unless (string-emptyp (get-current-line))
@@ -347,17 +265,15 @@ Also, if the line above is blank, nothing will happen."
   "Returns the `point' of the point at Column 0 in the current line."
   (interactive)
   (save-excursion
-    (progn
-      (beginning-of-line)
-      (point))))
+    (beginning-of-line)
+    (point)))
 
 (defun point-at-line-end ()
   "Returns the `point' of the point at the end of the current line."
   (interactive)
   (save-excursion
-    (progn
-      (end-of-line)
-      (point))))
+    (end-of-line)
+    (point)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LIST FUNCTIONS
@@ -367,13 +283,17 @@ Also, if the line above is blank, nothing will happen."
 BUG: Recursion depth limit destroys this."
   (if (= start end)
       nil
-    (cons start
-	  (range (1+ start) end))))
+    (cons start (range (1+ start) end))))
 
-(defun my-reverse (items)
-  "Reverses a list."
-  (let ((f (lambda (x acc) (append acc (list x)))))
-    (foldr f nil items)))
+(defun list-enumerate (items)
+  "Pairs each element of a list with a number."
+  (zip (range 1 (1+ (length items))) items))
+
+(defun list-last (items)
+  "Returns the last item in a list."
+  (if (null (cdr items))
+      (car items)
+    (list-last (cdr items))))
 
 (defun list-elemp (x items)
   "Determines if `x' is a member of `items'."
@@ -393,6 +313,12 @@ BUG: Recursion depth limit destroys this."
 (defun string-concat (strings)
   (mapconcat 'identity strings ""))
 
+(defun string-replicate (n item)
+  "Fuses a string to itself `n' times."
+  (if (< n 1)
+      ""
+    (concat item (string-replicate (1- n) item))))
+
 (defun string-nth-char (n item)
   "Returns the nth char of a given string."
   (let ((chars (string-to-list item)))
@@ -401,8 +327,6 @@ BUG: Recursion depth limit destroys this."
 (defun string-to-string-list (item)
   "Converts a string to a list of each char as a string."
   (map 'string (string-to-list item)))
-
-; (string-to-string-list "this is a list")
 
 (defun string-reverse (item)
   "Reverses all the chars in a given string."
@@ -433,6 +357,10 @@ BUG: Recursion depth limit destroys this."
   "Given a list of strings, joins them via newline chars."
   (mapconcat 'identity line-list "\n")) 
 
+(defun string-pad (c n line)
+  "Pads a string with `n` copies of a given char."
+  (string-concat (list (string-replicate n c) line)))
+
 (defun stripr (line)
   "Strips trailing whitespace."
   (when (string-match "[ \t]*$" line)
@@ -457,9 +385,9 @@ BUG: Recursion depth limit destroys this."
 
 (defun filter (p items)
   "A classic filter function."
-  (if (p (car items))
-      (cons (car items) (filter p (cdr items)))
-    (filter p (cdr items))))
+  (cond ((null items) nil)
+	((funcall p (car items)) (cons (car items) (filter p (cdr items))))
+	((filter p (cdr items)))))
 
 (defun take (n items)
   "Yields the first `n` items from a list."
@@ -473,6 +401,16 @@ BUG: Recursion depth limit destroys this."
       items
     (drop (1- n) (cdr items))))
 
+(defun zip-by (f l1 l2)
+  "Fuses two lists together via a given function."
+  (cond ((null l1) nil)
+	((null l2) nil)
+	((cons (funcall f (car l1) (car l2)) (zip-by f (cdr l1) (cdr l2))))))
+
+(defun zip (l1 l2)
+  "Combines two lists into a list of pairs."
+  (zip-by 'cons l1 l2))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NUMBER STUFF
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -482,13 +420,7 @@ BUG: Recursion depth limit destroys this."
 
 (defun oddp (num)
   "Determines if a number is odd."
-  (! (evenp num)))
-
-(defun ! (bool)
-  "True becomes nil, nil becomes true."
-  (if bool
-      nil
-    t))
+  (not (evenp num)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
