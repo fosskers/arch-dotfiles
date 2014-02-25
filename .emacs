@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL SETTINGS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -289,11 +291,11 @@ BUG: Recursion depth limit destroys this."
       nil
     (cons start (range (1+ start) end))))
 
-(defun list-intercalate (x items)
+(defun list-intersperse (x items)
   "Adds `x` between every item in the given list."
   (cond ((null items) nil)
 	((list-singlep items) items)
-	((cons (car items) (cons x (list-intercalate x (cdr items)))))))
+	((cons (car items) (cons x (list-intersperse x (cdr items)))))))
 
 (defun list-enumerate (items)
   "Pairs each element of a list with a number."
@@ -410,6 +412,18 @@ BUG: Recursion depth limit destroys this."
   (if (= 0 n)
       items
     (drop (1- n) (cdr items))))
+
+(defun take-while (p items)
+  "Performs `take` while `p` is true on the list's elements."
+  (cond ((null items) nil)
+	((funcall p (car items)) (cons (car items) (take-while p (cdr items))))
+	((take-while p (cdr items)))))
+
+(defun drop-while (p items)
+  "Performs `drop` while `p` is true on the list's elements."
+  (cond ((null items) nil)
+	((not (funcall p (car items))) items)
+	((drop-while p (cdr items)))))
 
 (defun zip-by (f l1 l2)
   "Fuses two lists together via a given function."
