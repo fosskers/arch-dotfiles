@@ -56,6 +56,23 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun replace-last-sexp ()
+  (interactive)
+  (let ((value (eval (preceding-sexp))))
+    (progn
+      (kill-sexp -1)
+      (insert (format "%s" value)))))
+
+(global-set-key (kbd "C-c r") 'replace-last-sexp)
+
+(defun do-n (n f)
+  "Perform `f` `n` times."
+  (if (< n 0)
+      nil
+    (progn
+      (funcall f)
+      (do-n (1- n) f))))
+
 (defun tex-block (name)
   "Takes a block name and creates \begin{} and \end{} tags."
   (interactive "sBlock name: ")
@@ -94,22 +111,6 @@
   "Grabs lines from a region."
   (let ((text (filter-buffer-substring (mark) (point) 'DELETE)))
     (string-lines text)))
-
-(defun js-frame ()
-  "Inserts basic HTML to be filled with Javascript."
-  (interactive)
-  (let ((top "<html><body><script type=\"text/javascript\">")
-	(bottom "</script></body></html>"))
-    (progn
-      (insert top)
-      (newline)
-      (newline)
-      (save-excursion
-	(newline)
-	(newline)
-	(insert bottom)))))
-
-(global-set-key (kbd "C-c j") 'js-frame)
 
 ; TODO: Make the boarder char optional.
 (defun chartify ()
@@ -215,15 +216,14 @@ BUG: Parens found in string and comments affect the regex match count!!!"
 (defun find-first-paren ()
   "Relative to (point), finds the first instance of `(' which
 appears in column zero. It's (point) is returned."
-  (save-excursion
-    (let ((here (point)))
-      (progn
-	(search-backward "(")
-	(if (= here (point))
-	    nil  ; The search failed.
-	  (if (point-at-col-zerop)
-	      (point)
-	    (find-first-paren)))))))
+  (let ((here (point)))
+    (save-excursion
+      (search-backward "(")
+      (if (= here (point))
+	  nil  ; The search failed.
+	(if (point-at-col-zerop)
+	    (point)
+	  (find-first-paren))))))
 
 (defun point-at-col-zerop ()
   "Determines if (point) is in column zero."
@@ -278,12 +278,22 @@ Also, if the line above is blank, nothing will happen."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LIST FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun list-singlep (items)
+  "True if the given list only has one element."
+  (= 1 (length items)))
+
 (defun range (start end)
   "Produces a list of ints from `start' to `end' exclusive.
 BUG: Recursion depth limit destroys this."
   (if (= start end)
       nil
     (cons start (range (1+ start) end))))
+
+(defun list-intercalate (x items)
+  "Adds `x` between every item in the given list."
+  (cond ((null items) nil)
+	((list-singlep items) items)
+	((cons (car items) (cons x (list-intercalate x (cdr items)))))))
 
 (defun list-enumerate (items)
   "Pairs each element of a list with a number."
@@ -361,7 +371,7 @@ BUG: Recursion depth limit destroys this."
   "Pads a string with `n` copies of a given char."
   (string-concat (list (string-replicate n c) line)))
 
-(defun stripr (line)
+(defun string-stripr (line)
   "Strips trailing whitespace."
   (when (string-match "[ \t]*$" line)
     (replace-match "" nil nil line)))
@@ -369,6 +379,8 @@ BUG: Recursion depth limit destroys this."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTIONAL PROGRAMMING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defalias 'map 'mapcar)
+
 (defun foldl (f zero items)
   "Folds a list via a function `f' from left to right."
   (if (null items)
@@ -380,8 +392,6 @@ BUG: Recursion depth limit destroys this."
   (if (null items)
       zero
     (funcall f (car items) (foldr f zero (cdr items)))))
-
-(defalias 'map 'mapcar)
 
 (defun filter (p items)
   "A classic filter function."
@@ -411,9 +421,21 @@ BUG: Recursion depth limit destroys this."
   "Combines two lists into a list of pairs."
   (zip-by 'cons l1 l2))
 
+(defun sum (nums)
+  (foldl '+ 0 nums))
+
+(defun product (nums)
+  (foldl '* 1 nums))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NUMBER STUFF
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun mean (nums)
+  "Finds the average of a set of numbers."
+  (/ (sum nums) (float (length nums))))
+
+(defalias 'average 'mean)
+
 (defun evenp (num)
   "Determines if a number is even."
   (= 0 (% num 2)))
