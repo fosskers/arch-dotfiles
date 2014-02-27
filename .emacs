@@ -58,6 +58,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun better-indent-region ()
+  "Indents a region by major mode."
+  (interactive)
+  (let ((lines (lines-from-region)))
+    (for-each (lambda (l) (progn
+			    (insert l)
+			    (beginning-of-line)
+			    (indent-according-to-mode)
+			    (end-of-line)
+			    (newline)))
+	      lines)))
+
+(global-set-key (kbd "C-c SPC") 'better-indent-region)
+
 (defun replace-last-sexp ()
   (interactive)
   (let ((value (eval (preceding-sexp))))
@@ -66,14 +80,6 @@
       (insert (format "%s" value)))))
 
 (global-set-key (kbd "C-c r") 'replace-last-sexp)
-
-(defun do-n (n f)
-  "Perform `f` `n` times."
-  (if (< n 0)
-      nil
-    (progn
-      (funcall f)
-      (do-n (1- n) f))))
 
 (defun tex-block (name)
   "Takes a block name and creates \begin{} and \end{} tags."
@@ -108,11 +114,6 @@
   (insert (string-unlines (reverse (lines-from-region)))))
 
 (global-set-key (kbd "C-c C-f") 'flip-lines)
-
-(defun lines-from-region ()
-  "Grabs lines from a region."
-  (let ((text (filter-buffer-substring (mark) (point) 'DELETE)))
-    (string-lines text)))
 
 ; TODO: Make the boarder char optional.
 (defun chartify ()
@@ -227,10 +228,6 @@ appears in column zero. It's (point) is returned."
 	    (point)
 	  (find-first-paren))))))
 
-(defun point-at-col-zerop ()
-  "Determines if (point) is in column zero."
-  (= 0 (current-column)))
-
 ;; Underline Completer
 (defun underline-complete (item)
   "Given a string of length 1, draws a line with that string equal in length
@@ -254,28 +251,6 @@ Also, if the line above is blank, nothing will happen."
 		 (insert underline))))))))
 
 (global-set-key (kbd "C-c C-u") 'underline-complete)
-
-(defun get-current-line ()
-  "Returns the string of the line that `point' resides in."
-  (interactive)
-  (save-excursion
-    (filter-buffer-substring (point-at-line-start) 
-			     (point-at-line-end)
-			     t)))
-
-(defun point-at-line-start ()
-  "Returns the `point' of the point at Column 0 in the current line."
-  (interactive)
-  (save-excursion
-    (beginning-of-line)
-    (point)))
-
-(defun point-at-line-end ()
-  "Returns the `point' of the point at the end of the current line."
-  (interactive)
-  (save-excursion
-    (end-of-line)
-    (point)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LIST FUNCTIONS
@@ -436,10 +411,26 @@ BUG: Recursion depth limit destroys this."
   (zip-by 'cons l1 l2))
 
 (defun sum (nums)
+  "Adds all the numbers in a list."
   (foldl '+ 0 nums))
 
 (defun product (nums)
+  "Mulitplies all the numbers in a list."
   (foldl '* 1 nums))
+
+(defun select-by (f items)
+  "Selects the element in the list with the most `f`ness."
+  (if (null items)
+      nil
+    (foldl (lambda (acc x) (funcall f acc x)) (car items) (cdr items))))
+
+(defun maximum (nums)
+  "Finds the greatest number in a list."
+  (select-by 'max nums))
+
+(defun minimum (nums)
+  "Finds the lowest number in a list."
+  (select-by 'min nums))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NUMBER STUFF
@@ -458,6 +449,60 @@ BUG: Recursion depth limit destroys this."
   "Determines if a number is odd."
   (not (evenp num)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OTHER FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun for-each (f items)
+  "Performs some action `f` on every item in the list.
+The result of `f` on the last item of the list is returned."
+  (if (null items)
+      nil
+    (progn
+      (funcall f (car items))
+      (for-each f (cdr items)))))
+
+(defun do-n (n f)
+  "Perform `f` `n` times."
+  (if (< n 0)
+      nil
+    (progn
+      (funcall f)
+      (do-n (1- n) f))))
+
+(defun lines-from-region ()
+  "Grabs lines from a region."
+  (let ((text (filter-buffer-substring (mark) (point) 'DELETE)))
+    (string-lines text)))
+
+(defun point-at-col-zerop ()
+  "Determines if (point) is in column zero."
+  (= 0 (current-column)))
+
+(defun get-current-line ()
+  "Returns the string of the line that `point' resides in."
+  (interactive)
+  (save-excursion
+    (filter-buffer-substring (point-at-line-start)
+			     (point-at-line-end)
+			     t)))
+
+(defun point-at-line-start ()
+  "Returns the `point' of the point at Column 0 in the current line."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (point)))
+
+(defun point-at-line-end ()
+  "Returns the `point' of the point at the end of the current line."
+  (interactive)
+  (save-excursion
+    (end-of-line)
+    (point)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MISC.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
