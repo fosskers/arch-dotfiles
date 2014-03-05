@@ -176,7 +176,7 @@ end
 # REVAMPED COMMANDS
 
 function grep
-   command grep -n --colour $argv
+   command grep -s -n --colour $argv
 end
 
 function rm

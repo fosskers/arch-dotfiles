@@ -29,8 +29,9 @@
 (setq split-height-threshold nil)
 (setq split-width-threshold 0)
 
-;; Is this safe?
-(setq max-lisp-eval-depth 1500)
+;; Modern computers can handle this.
+(setq max-lisp-eval-depth 18000)
+(setq max-specpdl-size 19500)
 
 ;; What do these do?
 (put 'narrow-to-region 'disabled nil)
@@ -39,8 +40,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Scheme mode for Hisp and Racket
-(add-to-list 'auto-mode-alist '("\\.hisp\\'" . scheme-mode))
+(require 'generic-x)
+
+;; Hisp Mode
+(define-generic-mode 
+  'hisp-mode
+  '(";")
+  '("map" "filter" "foldl" "cond" "if" "else" "let" "lambda" "define" "require"
+    "λ" "foldr")
+  '(("(" . 'font-lock-builtin)
+    (")" . 'font-lock-builtin))
+  '("\\.hisp$")
+  nil  ;; other functions to call
+  "A simple mode for Hisp code.")
+
+;; Scheme mode for Racket
 (require 'quack)
 ;; (add-to-list 'auto-mode-alist '("\\.rkt\\'" . scheme-mode))
 
@@ -172,26 +186,26 @@
 		      ((eq major-mode 'scheme-mode) (scheme-fun name))
 		      ((eq major-mode 'c-mode) (c-fun name))
 		      ((eq major-mode 'java-mode) (java-fun name))
-		      ((list "(def " "")))))
+		      ((cons "(def " "")))))
     (progn
       (insert (car to-add))
       (save-excursion
-	(insert (car (cdr to-add)))))))
+	(insert (cdr to-add))))))
 
 (defun scheme-fun (name)
-  (list (string-concat (list "(define (" name))
+  (cons (string-concat (list "(define (" name))
 	"))"))
 
 (defun emacs-lisp-fun (name)
-  (list (string-concat (list "(defun " name " ("))
+  (cons (string-concat (list "(defun " name " ("))
 	")"))
 
 (defun c-fun (name)
-  (list (string-concat (list "type " name "("))
+  (cons (string-concat (list "type " name "("))
 	") {\n}"))
 
 (defun java-fun (name)
-  (list (string-concat (list "public static " name "("))
+  (cons (string-concat (list "public static " name "("))
 	") {\n}"))
 
 (global-set-key (kbd "C-c d") 'add-def)
@@ -258,13 +272,6 @@ Also, if the line above is blank, nothing will happen."
 (defun list-singlep (items)
   "True if the given list only has one element."
   (= 1 (length items)))
-
-(defun range (start end)
-  "Produces a list of ints from `start' to `end' exclusive.
-BUG: Recursion depth limit destroys this."
-  (if (= start end)
-      nil
-    (cons start (range (1+ start) end))))
 
 (defun list-intersperse (x items)
   "Adds `x` between every item in the given list."
@@ -392,7 +399,7 @@ BUG: Recursion depth limit destroys this."
   "Performs `take` while `p` is true on the list's elements."
   (cond ((null items) nil)
 	((funcall p (car items)) (cons (car items) (take-while p (cdr items))))
-	((take-while p (cdr items)))))
+	(nil)))
 
 (defun drop-while (p items)
   "Performs `drop` while `p` is true on the list's elements."
@@ -432,6 +439,17 @@ BUG: Recursion depth limit destroys this."
   "Finds the lowest number in a list."
   (select-by 'min nums))
 
+(defun group-by (p items)
+  (if (null items)
+      nil
+    (let ((pred (lambda (x) (funcall p x (car items)))))
+      (cons (take-while pred items)
+	    (group-by p (drop-while pred items))))))
+
+(defun group (items)
+  "Groups by equality."
+  (group-by 'equal items))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NUMBER STUFF
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -448,6 +466,13 @@ BUG: Recursion depth limit destroys this."
 (defun oddp (num)
   "Determines if a number is odd."
   (not (evenp num)))
+
+(defun range (start end)
+  "Produces a list of ints from `start' to `end' exclusive.
+BUG: Recursion depth limit destroys this."
+  (if (= start end)
+      nil
+    (cons start (range (1+ start) end))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OTHER FUNCTIONS
