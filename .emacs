@@ -54,20 +54,19 @@
   nil  ;; other functions to call
   "A simple mode for Hisp code.")
 
-;; Scheme mode for Racket
-(require 'quack)
-;; (add-to-list 'auto-mode-alist '("\\.rkt\\'" . scheme-mode))
-
-;; Haskell mode
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
-(require 'haskell-mode-autoloads)
+;; Arch Linux only
+(when (eq system-type 'gnu/linux)
+  ;; For Racket/Scheme
+  (require 'quack)
+  ;; Haskell mode
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
+  (require 'haskell-mode-autoloads)
 ;(load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
-(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-
-;; PKGBUILD mode
-(autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
-(setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+  ;; PKGBUILD mode
+  (autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
+  (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS

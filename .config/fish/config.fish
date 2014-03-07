@@ -7,7 +7,7 @@ set fish_greeting
 set -x EDITOR "emacs"
 
 # PATH
-set -x PATH '/bin' '/usr/bin' '/usr/local/bin' '/usr/sbin' '/sbin' '/home/colin/.cabal/bin'
+set -x PATH '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin'
 
 set PATH (find $PATH -type d)
 
