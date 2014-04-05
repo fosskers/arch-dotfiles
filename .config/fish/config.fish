@@ -7,11 +7,15 @@ set fish_greeting
 set -x EDITOR "emacs"
 
 # PATH
-set -x PATH '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin'
+set -x PATH '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/opt/java/bin'
 
 set PATH (find $PATH -type d)
 
 set -x PYTHONPATH '/home/colin/code/lib/pymodules/'
+
+set -x _JAVA_AWT_WM_NONREPARENTING 1
+
+set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
 
 # BROWSER
 set -x BROWSER "chromium"

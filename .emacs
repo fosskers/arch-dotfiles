@@ -54,6 +54,13 @@
   nil  ;; other functions to call
   "A simple mode for Hisp code.")
 
+;; Scala Mode
+(add-to-list 'load-path "/usr/share/emacs/scala-mode")
+(require 'scala-mode-auto)
+
+;; Elm Mode
+(add-to-list 'auto-mode-alist '("\\.elm\\'" . haskell-mode))
+
 ;; Arch Linux only
 (when (eq system-type 'gnu/linux)
   ;; For Racket/Scheme
@@ -69,8 +76,47 @@
   (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; JAVA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun java-getter ()
+  "Writes a getter function for a variable."
+  (interactive)
+  (let* ((line (copy-current-line))
+	 (splat (split-string line))
+	 (type (car splat))
+	 (name (string-init (car (cdr splat))))
+	 (capped (string-concat (list "get" (capitalize name)))))
+    (progn
+      (end-of-line)
+      (newline-and-indent)
+      (newline-and-indent)
+      (insert (string-unwords (list "public" type capped "() {")))
+      (newline-and-indent)
+      (insert (string-concat (list "return " name ";}")))
+      (backward-char)
+      (newline-and-indent))))
+
+(global-set-key (kbd "C-c g") 'java-getter)
+
+;(string-init (car (cdr (split-string "wee woo"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun insert-braces ()
+  "Inserts braces for quicker coding in C-like languages."
+  (interactive)
+  (progn
+    (insert "{")
+    (newline-and-indent)
+    (save-excursion
+      (newline)
+      (insert "}")
+      (beginning-of-line)
+      (indent-according-to-mode))))
+
+(global-set-key (kbd "C-c [") 'insert-braces)
+
 (defun better-indent-region ()
   "Indents a region by major mode."
   (interactive)
@@ -282,6 +328,12 @@ Also, if the line above is blank, nothing will happen."
   "Pairs each element of a list with a number."
   (zip (range 1 (1+ (length items))) items))
 
+(defun list-init (items)
+  "Returns the first n-1 items in a length n list."
+  (if (> 2 (length items))
+      nil
+    (cons (car items) (list-init (cdr items)))))
+
 (defun list-last (items)
   "Returns the last item in a list."
   (if (null (cdr items))
@@ -319,7 +371,7 @@ Also, if the line above is blank, nothing will happen."
 
 (defun string-to-string-list (item)
   "Converts a string to a list of each char as a string."
-  (map 'string (string-to-list item)))
+  (mapcar 'string (string-to-list item)))
 
 (defun string-reverse (item)
   "Reverses all the chars in a given string."
@@ -350,6 +402,10 @@ Also, if the line above is blank, nothing will happen."
   "Given a list of strings, joins them via newline chars."
   (mapconcat 'identity line-list "\n")) 
 
+(defun string-init (line)
+  "Returns the first n-1 chars of a length n string."
+  (string-concat (list-init (string-to-string-list line))))
+
 (defun string-pad (c n line)
   "Pads a string with `n` copies of a given char."
   (string-concat (list (string-replicate n c) line)))
@@ -362,7 +418,8 @@ Also, if the line above is blank, nothing will happen."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTIONAL PROGRAMMING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defalias 'map 'mapcar)
+(defun map (f items)
+  (mapcar f items))
 
 (defun foldl (f zero items)
   "Folds a list via a function `f' from left to right."
@@ -473,6 +530,9 @@ BUG: Recursion depth limit destroys this."
       nil
     (cons start (range (1+ start) end))))
 
+(defun id (x)
+  "Returns what it's given."
+  x)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OTHER FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -509,6 +569,13 @@ The result of `f` on the last item of the list is returned."
     (filter-buffer-substring (point-at-line-start)
 			     (point-at-line-end)
 			     t)))
+
+(defun copy-current-line ()
+  "Returns the string of the line that `point' resides in. Non-destructive."
+  (interactive)
+  (save-excursion
+    (filter-buffer-substring (point-at-line-start)
+			     (point-at-line-end))))
 
 (defun point-at-line-start ()
   "Returns the `point' of the point at Column 0 in the current line."

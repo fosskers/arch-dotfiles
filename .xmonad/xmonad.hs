@@ -112,7 +112,7 @@ main = do
 	     , manageHook         = newManageHook
 	     , handleEventHook    = fullscreenEventHook <+> docksEventHook
 	     , startupHook        = setWMName "LG3D"
-	     , logHook            = myLogHook dzenLeftBar }
+	     , logHook            = myLogHook dzenLeftBar >> setWMName "LG3D" }
 
 myTerminal 	= "urxvt"
 myFont = "xft:lime:size=6"  --":bold:size=8"
