@@ -54,10 +54,6 @@
   nil  ;; other functions to call
   "A simple mode for Hisp code.")
 
-;; Scala Mode
-(add-to-list 'load-path "/usr/share/emacs/scala-mode")
-(require 'scala-mode-auto)
-
 ;; Elm Mode
 (add-to-list 'auto-mode-alist '("\\.elm\\'" . haskell-mode))
 
@@ -73,7 +69,10 @@
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
   ;; PKGBUILD mode
   (autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
-  (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist)))
+  (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
+  ;; Scala Mode
+  (add-to-list 'load-path "/usr/share/emacs/scala-mode")
+  (require 'scala-mode-auto))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVA
