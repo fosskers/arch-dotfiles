@@ -1,5 +1,13 @@
 Log of Various Fixes
 --------------------
+2014 Apr 30 - Figured out syncing music to Android.
+     	      Installed `jmtpfs` and used `jmtpfs ~/mnt/mtp` to mount my phone
+	      to the computer. Then I just copy over files as needed.
+	      Use `fusermount -u ~/mnt/mtp` to unmount.
+	      Note: If the screen locks at any point, the mount seems to revert
+	      to read-only status. You need to remount if this happens.
+	      One solution is to set the phone's screen lock time to a long time.
+
 2013 Nov 17 - Got rid of ldconfig error messages by deleting:
      	      /usr/lib32/libnvcuvid.so.319.23
 	      /usr/lib32/libnvidia-ml.so.319.23

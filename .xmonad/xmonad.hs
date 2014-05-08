@@ -70,6 +70,7 @@ myManageHook = composeAll [ resource =? "dmenu"    --> doFloat
                           , fmap ("libreoffice" `isInfixOf`) className --> doShift (myWorkspaces !! 2)
                           , fmap ("Steam" `isPrefixOf`) className --> doShift (myWorkspaces !! 3)
                           , resource =? "dolphin-emu" --> doShift (myWorkspaces !! 3)
+                          , fmap ("Battle" `isInfixOf`) className --> doShift (myWorkspaces !! 3)
                           , resource =? "gat" --> doShift (myWorkspaces !! 4) ]
 
 newManageHook = myManageHook <+> manageHook defaultConfig <+> manageDocks 
@@ -114,7 +115,7 @@ main = do
 	     , startupHook        = setWMName "LG3D"
 	     , logHook            = myLogHook dzenLeftBar >> setWMName "LG3D" }
 
-myTerminal 	= "urxvt"
+myTerminal = "urxvt"
 myFont = "xft:lime:size=6"  --":bold:size=8"
 --myFont		= "-*-lime-*-*-*-*-*-*-*-*-*-*-*-*"
 

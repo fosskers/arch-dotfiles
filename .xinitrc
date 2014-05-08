@@ -8,7 +8,7 @@ export XMODIFIERS=@im='uim'
 setxkbmap -option compose:ralt
 
 # MUSIC PLAYER DAEMON
-mpd ~/.mpd.conf
+#mpd ~/.mpd.conf
 
 # STUFF FOR XMONAD AND THE XSERVER
 setwall -r /home/colin/backgrounds/

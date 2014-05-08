@@ -72,7 +72,10 @@
   (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
   ;; Scala Mode
   (add-to-list 'load-path "/usr/share/emacs/scala-mode")
-  (require 'scala-mode-auto))
+  (require 'scala-mode-auto)
+  ;; Erlang Mode
+  (add-to-list 'load-path "/usr/lib/erlang/lib/tools-2.6.14/emacs")
+  (require 'erlang-start))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVA

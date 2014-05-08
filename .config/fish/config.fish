@@ -17,6 +17,8 @@ set -x _JAVA_AWT_WM_NONREPARENTING 1
 
 set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
 
+set -x JAVA_HOME '/opt/java'
+
 # BROWSER
 set -x BROWSER "chromium"
 
@@ -39,6 +41,10 @@ end
 
 function ha
   cd /home/colin/code/haskell/aura/
+end
+
+function sc
+  scalac *.scala
 end
 
 function s
@@ -144,6 +150,10 @@ end
 
 function n
   ncmpcpp
+end
+
+function m
+  makepkg $argv
 end
 
 function sx
