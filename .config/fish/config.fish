@@ -19,6 +19,8 @@ set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -
 
 set -x JAVA_HOME '/opt/java'
 
+set -x ARCH_HASKELL 'Colin Woodbury <colingw@gmail.com>'
+
 # BROWSER
 set -x BROWSER "chromium"
 

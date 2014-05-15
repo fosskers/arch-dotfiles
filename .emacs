@@ -11,6 +11,9 @@
 ;; Line by line scrolling
 (setq scroll-step 1)
 
+;; Indents are done with spaces, not tabs.
+(setq-default indent-tabs-mode nil)
+
 ;; Enable backup files
 ;; Change t to nil to turn this off.
 (setq make-backup-files t)
@@ -64,15 +67,19 @@
   ;; Haskell mode
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
   (require 'haskell-mode-autoloads)
-;(load "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
   (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/structured-haskell-mode")
+;;  (require 'shm)
+;;  (add-hook 'haskell-mode-hook 'structured-haskell-mode)
+  ;;(setq shm-program-name "/usr/bin/structured-haskell-mode")
   ;; PKGBUILD mode
   (autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
   (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
   ;; Scala Mode
   (add-to-list 'load-path "/usr/share/emacs/scala-mode")
   (require 'scala-mode-auto)
+  (add-to-list 'auto-mode-alist '("\\.sbt\\'" . scala-mode))
   ;; Erlang Mode
   (add-to-list 'load-path "/usr/lib/erlang/lib/tools-2.6.14/emacs")
   (require 'erlang-start))

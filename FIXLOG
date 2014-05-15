@@ -1,5 +1,10 @@
 Log of Various Fixes
 --------------------
+2014 May 12 - Fixed non-responsive trackpad by rebuilding:
+              `xf86-input-mtrack-git`
+	      Enough kernel upgrades without rebuilding it probably killed it
+	      after a while.
+
 2014 Apr 30 - Figured out syncing music to Android.
      	      Installed `jmtpfs` and used `jmtpfs ~/mnt/mtp` to mount my phone
 	      to the computer. Then I just copy over files as needed.
