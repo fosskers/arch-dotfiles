@@ -64,6 +64,7 @@ myWorkspaces = clickable [ "^i(/home/colin/.xmonad/dzen2/arch_10x10.xbm) term"
 			
 myManageHook = composeAll [ resource =? "dmenu"    --> doFloat
 			  , resource =? "chromium" --> doShift (myWorkspaces !! 1)
+                          , resource =? "icecat"   --> doShift (myWorkspaces !! 1)
                           , resource =? "gimp"     --> doShift (myWorkspaces !! 2)
                           , resource =? "anki"     --> doShift (myWorkspaces !! 2)
                           , resource =? "evince"   --> doShift (myWorkspaces !! 2)

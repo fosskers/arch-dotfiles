@@ -1,8 +1,7 @@
 ! urxvt settings
 URxvt.background : #202020
 URxvt.foreground : #999999
-URxvt.font       : xft:Inconsolata-g:bold:size=8, \
-                   xft:IPAGothic,IPAゴシック
+URxvt.font       : xft:monaco:bold:size=7
 URxvt.scrollBar  : False
 URxvt.pointBlank : true
 URxvt.transparent: true
@@ -40,7 +39,7 @@ URxvt.colorUL : #87afd7
 
 ! urxvt-perls
 URxvt.perl-ext-common:      default,clipboard,url-select,keyboard-select
-URxvt.url-select.launcher:  chromium
+URxvt.url-select.launcher:  icecat
 URxvt.url-select.underline: true
 URxvt.keysym.M-u:           perl:url-select:select_next
 URxvt.keysym.M-Escape:      perl:keyboard-select:activate

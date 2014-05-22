@@ -1,5 +1,9 @@
 Log of Various Fixes
 --------------------
+2014 May 21 - All fonts are beautiful now thanks to the [infinality-bundle]
+              repo and packages. Fonts are great out of the box. I didn't
+              do any extra configuration.
+
 2014 May 12 - Fixed non-responsive trackpad by rebuilding:
               `xf86-input-mtrack-git`
 	      Enough kernel upgrades without rebuilding it probably killed it

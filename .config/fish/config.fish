@@ -207,6 +207,18 @@ function ga
   git commit -a $argv
 end
 
+function gb
+  git branch $argv
+end
+
+function gc
+  git checkout $argv
+end
+
+function gl
+  git log
+end
+
 # MOUNTING SHORTCUTS
 function mb
   mount ~/mnt/buffaloflash

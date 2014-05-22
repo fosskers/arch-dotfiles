@@ -13,6 +13,9 @@
 
 ;; Indents are done with spaces, not tabs.
 (setq-default indent-tabs-mode nil)
+(setq tab-width 4)
+(setq tab-stop-list (number-sequence 4 200 4))
+(setq ruby-indent-level 4)
 
 ;; Enable backup files
 ;; Change t to nil to turn this off.
@@ -82,7 +85,11 @@
   (add-to-list 'auto-mode-alist '("\\.sbt\\'" . scala-mode))
   ;; Erlang Mode
   (add-to-list 'load-path "/usr/lib/erlang/lib/tools-2.6.14/emacs")
-  (require 'erlang-start))
+  (require 'erlang-start)
+  ;; Markdown mode
+  (autoload 'markdown-mode "markdown-mode" "Markdown mode" t)
+  (setq auto-mode-alist (cons '("\\.md\\'" . markdown-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVA
@@ -112,6 +119,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun now ()
+  "Insert string for today's date nicely formatted in American style,
+e.g. Sunday, September 17, 2000."
+  (interactive)
+  (insert (format-time-string "%Y %B %e @ %H:%M")))
+
 (defun insert-braces ()
   "Inserts braces for quicker coding in C-like languages."
   (interactive)
@@ -318,7 +331,7 @@ Also, if the line above is blank, nothing will happen."
 		     (newline)))
 		 (insert underline))))))))
 
-(global-set-key (kbd "C-c C-u") 'underline-complete)
+(global-set-key (kbd "C-c u") 'underline-complete)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LIST FUNCTIONS
