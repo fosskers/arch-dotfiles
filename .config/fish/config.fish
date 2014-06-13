@@ -15,7 +15,7 @@ set -x PYTHONPATH '/home/colin/code/lib/pymodules/'
 
 set -x _JAVA_AWT_WM_NONREPARENTING 1
 
-set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
+#set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
 
 set -x JAVA_HOME '/opt/java'
 
@@ -25,6 +25,13 @@ set -x ARCH_HASKELL 'Colin Woodbury <colingw@gmail.com>'
 set -x BROWSER "chromium"
 
 # RANDOM SHORTCUTS
+function dbs
+  echo "Starting Mongo daemon..."
+  sudo systemctl start mongodb.service
+  echo "Starting MySQL daemon..."
+  sudo systemctl start mysqld.service
+end
+
 function lw
   wine "/home/colin/Desktop/LogicWorks 5/LogicWorks 5/LogicWorks.exe"
 end
@@ -90,7 +97,7 @@ function p
 end
 
 function hdoc
-  chromium /usr/share/doc/ghc/html/libraries/index.html &
+  icecat /usr/share/doc/ghc/html/libraries/index.html &
 end
 
 function batt

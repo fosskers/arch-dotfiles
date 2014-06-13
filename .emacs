@@ -1,8 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL SETTINGS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lambda character
 (global-set-key (kbd "M-l") (lambda () (interactive) (insert "\u03bb")))
 
@@ -16,6 +16,7 @@
 (setq tab-width 4)
 (setq tab-stop-list (number-sequence 4 200 4))
 (setq ruby-indent-level 4)
+(defvaralias 'c-basic-offset 'tab-width)
 
 ;; Enable backup files
 ;; Change t to nil to turn this off.
@@ -43,9 +44,9 @@
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'generic-x)
 
 ;; Hisp Mode
@@ -63,6 +64,11 @@
 ;; Elm Mode
 (add-to-list 'auto-mode-alist '("\\.elm\\'" . haskell-mode))
 
+(add-hook 'html-mode-hook
+          (lambda()
+            (setq sgml-basic-offset 2)))
+;            (setq indent-tabs-mode t)))
+
 ;; Arch Linux only
 (when (eq system-type 'gnu/linux)
   ;; For Racket/Scheme
@@ -71,7 +77,7 @@
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
   (require 'haskell-mode-autoloads)
   (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 ;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/structured-haskell-mode")
 ;;  (require 'shm)
 ;;  (add-hook 'haskell-mode-hook 'structured-haskell-mode)
@@ -91,9 +97,9 @@
   (setq auto-mode-alist (cons '("\\.md\\'" . markdown-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVA
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun java-getter ()
   "Writes a getter function for a variable."
   (interactive)
@@ -116,9 +122,39 @@
 
 ;(string-init (car (cdr (split-string "wee woo"))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun line-wrap-region ()
+  "Line wraps a region so its lines aren't longer than 80 characters."
+  (interactive)
+  (let* ((lines   (lines-from-region))
+         (words   (list-concat (mapcar 'string-words lines)))
+         (wrapped (reverse (foldl
+                            (lambda (acc word)
+                              (if (null acc)
+                                  (list word)
+                                (let ((head (car acc)))
+                                  (if (< 75 (+ (length word) (length head)))
+                                      (cons word acc)
+                                    (cons (string-unwords (list head word))
+                                          (cdr acc))))))
+                            nil
+                            words))))
+    (insert (string-unlines wrapped))))
+
+(defun lorem ()
+  "Insert the first paragraph of Lorem Ipsum."
+  (interactive)
+  (insert "Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Maecenas sed urna eget tellus ultrices dapibus sed sit amet enim.
+Phasellus ultricies venenatis augue, vel imperdiet orci bibendum imperdiet.
+Etiam feugiat turpis in dictum imperdiet. Nunc quis urna pulvinar, condimentum
+purus nec, ullamcorper nisl. Proin mollis sed dui non interdum.
+Duis varius magna sed odio adipiscing, eget facilisis metus dictum. Cras
+quis turpis sit amet diam dignissim aliquet a iaculis lorem.
+Sed et rutrum velit."))
+
 (defun now ()
   "Insert string for today's date nicely formatted in American style,
 e.g. Sunday, September 17, 2000."
@@ -187,7 +223,7 @@ e.g. Sunday, September 17, 2000."
 							  (cdr pair)))))
 				 line-pairs)))))
 
-(global-set-key (kbd "C-c C-n") 'numbered-list)
+(global-set-key (kbd "C-c n") 'numbered-list)
 
 (defun flip-lines ()
   "Flips the order of the lines in a marked area."
@@ -333,9 +369,9 @@ Also, if the line above is blank, nothing will happen."
 
 (global-set-key (kbd "C-c u") 'underline-complete)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LIST FUNCTIONS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun list-singlep (items)
   "True if the given list only has one element."
   (= 1 (length items)))
@@ -370,9 +406,15 @@ Also, if the line above is blank, nothing will happen."
 	t
       (list-elemp x (cdr items)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defalias 'list-++ 'append)
+
+(defun list-concat (lists)
+  "[[a]] -> [a]"
+  (foldr (lambda (list acc) (list-++ list acc)) nil lists))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; STRING FUNCTIONS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun string-emptyp (item)
   "Deteremines if a given string is empty."
   (string= item ""))
@@ -437,11 +479,10 @@ Also, if the line above is blank, nothing will happen."
   (when (string-match "[ \t]*$" line)
     (replace-match "" nil nil line)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTIONAL PROGRAMMING
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun map (f items)
-  (mapcar f items))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defalias 'map 'mapcar)
 
 (defun foldl (f zero items)
   "Folds a list via a function `f' from left to right."
@@ -528,9 +569,9 @@ Also, if the line above is blank, nothing will happen."
   "Groups by equality."
   (group-by 'equal items))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NUMBER STUFF
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun mean (nums)
   "Finds the average of a set of numbers."
   (/ (sum nums) (float (length nums))))
@@ -555,9 +596,9 @@ BUG: Recursion depth limit destroys this."
 (defun id (x)
   "Returns what it's given."
   x)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OTHER FUNCTIONS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun for-each (f items)
   "Performs some action `f` on every item in the list.
 The result of `f` on the last item of the list is returned."
@@ -577,6 +618,7 @@ The result of `f` on the last item of the list is returned."
 
 (defun lines-from-region ()
   "Grabs lines from a region."
+  (interactive)
   (let ((text (filter-buffer-substring (mark) (point) 'DELETE)))
     (string-lines text)))
 
