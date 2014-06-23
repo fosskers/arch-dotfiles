@@ -95,7 +95,11 @@
   ;; Markdown mode
   (autoload 'markdown-mode "markdown-mode" "Markdown mode" t)
   (setq auto-mode-alist (cons '("\\.md\\'" . markdown-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist)))
+  (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist))
+  ;; Web mode
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/web-mode")
+  (require 'web-mode)
+  (add-to-list 'auto-mode-alist '("\\.html$" . web-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVA
@@ -218,9 +222,10 @@ e.g. Sunday, September 17, 2000."
     (insert (string-unlines (map (lambda (pair)
 				   (let* ((num (int-to-string (car pair)))
 					  (diff (- longest (length num))))
-				     (string-concat (list (string-pad " " diff num)
-							  ". "
-							  (cdr pair)))))
+				     (string-concat (list
+                                                     (string-pad " " diff num)
+                                                     ". "
+                                                     (cdr pair)))))
 				 line-pairs)))))
 
 (global-set-key (kbd "C-c n") 'numbered-list)
@@ -355,7 +360,7 @@ Also, if the line above is blank, nothing will happen."
   (cond ((= 1 (line-number-at-pos)) (message "Can't. You're at line 1."))
 	((not (= 1 (string-width item))) (message "Can't. Arg was too long."))
 	((let ((len (save-excursion
-		       (previous-line) (end-of-line) (current-column))))	       
+		       (previous-line) (end-of-line) (current-column))))
 	   (if (zerop len)
 	       (message "Line above is blank.")
 	     (let ((here (point-at-line-start))
@@ -655,9 +660,9 @@ The result of `f` on the last item of the list is returned."
     (end-of-line)
     (point)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MISC.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
