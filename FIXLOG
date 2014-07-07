@@ -1,5 +1,14 @@
 Log of Various Fixes
 --------------------
+2014 Jul 03 - Created `/etc/pm/power.d/laptop-mode` as a dummy hook
+              to try and stop conflicts between laptop-mode-tools and
+              pm-utils. My mouse was freezing a lot, even on AC.
+
+2014 Jul 02 - Packages won't install. Tried:
+                pacman-key --refresh-keys
+              Then I deleted everything out of the package cache, and
+              attempted a redownload. Seems to have worked.
+
 2014 May 21 - All fonts are beautiful now thanks to the [infinality-bundle]
               repo and packages. Fonts are great out of the box. I didn't
               do any extra configuration.

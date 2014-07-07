@@ -196,16 +196,6 @@ function mkcd
   cd $argv
 end
 
-# REVAMPED COMMANDS
-
-function grep
-   command grep -s -n --colour $argv
-end
-
-function rm
-  command rm -i $argv
-end
-
 function gd
   git diff $argv --color
 end
@@ -224,6 +214,19 @@ end
 
 function gl
   git log
+end
+
+function eo
+  emacs (ack -l $argv)
+end
+
+# REVAMPED COMMANDS
+function grep
+   command grep -s -n --colour $argv
+end
+
+function rm
+  command rm -i $argv
 end
 
 # MOUNTING SHORTCUTS

@@ -90,16 +90,16 @@
   (require 'scala-mode-auto)
   (add-to-list 'auto-mode-alist '("\\.sbt\\'" . scala-mode))
   ;; Erlang Mode
-  (add-to-list 'load-path "/usr/lib/erlang/lib/tools-2.6.14/emacs")
-  (require 'erlang-start)
+;;  (add-to-list 'load-path "/usr/lib/erlang/lib/tools-2.6.14/emacs")
+;;  (require 'erlang-start)
   ;; Markdown mode
   (autoload 'markdown-mode "markdown-mode" "Markdown mode" t)
   (setq auto-mode-alist (cons '("\\.md\\'" . markdown-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist)))
   ;; Web mode
-  (add-to-list 'load-path "/usr/share/emacs/site-lisp/web-mode")
-  (require 'web-mode)
-  (add-to-list 'auto-mode-alist '("\\.html$" . web-mode)))
+;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/web-mode")
+;;  (require 'web-mode)
+;;  (add-to-list 'auto-mode-alist '("\\.html$" . web-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVA
@@ -129,9 +129,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun line-wrap-region ()
-  "Line wraps a region so its lines aren't longer than 80 characters."
-  (interactive)
+(defun line-wrap-region (len)
+  "Line wraps a region so its lines aren't longer than a length
+specified by the user."
+  (interactive "nNew line length: ")
   (let* ((lines   (lines-from-region))
          (words   (list-concat (mapcar 'string-words lines)))
          (wrapped (reverse (foldl
@@ -139,7 +140,7 @@
                               (if (null acc)
                                   (list word)
                                 (let ((head (car acc)))
-                                  (if (< 75 (+ (length word) (length head)))
+                                  (if (< len (+ (length word) (length head)))
                                       (cons word acc)
                                     (cons (string-unwords (list head word))
                                           (cdr acc))))))
@@ -159,9 +160,10 @@ Duis varius magna sed odio adipiscing, eget facilisis metus dictum. Cras
 quis turpis sit amet diam dignissim aliquet a iaculis lorem.
 Sed et rutrum velit."))
 
+2014 July  7 @ 10:19
+
 (defun now ()
-  "Insert string for today's date nicely formatted in American style,
-e.g. Sunday, September 17, 2000."
+  "Insert string for today's date like: year month day @ time"
   (interactive)
   (insert (format-time-string "%Y %B %e @ %H:%M")))
 
