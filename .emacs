@@ -160,8 +160,6 @@ Duis varius magna sed odio adipiscing, eget facilisis metus dictum. Cras
 quis turpis sit amet diam dignissim aliquet a iaculis lorem.
 Sed et rutrum velit."))
 
-2014 July  7 @ 10:19
-
 (defun now ()
   "Insert string for today's date like: year month day @ time"
   (interactive)
