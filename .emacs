@@ -1,6 +1,15 @@
 ;;; -*- lexical-binding: t -*-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PACKAGES
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MELPA
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+(package-initialize)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL SETTINGS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lambda character
@@ -49,6 +58,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'generic-x)
 
+;; Flycheck
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
 ;; Hisp Mode
 (define-generic-mode 
   'hisp-mode
@@ -69,15 +81,37 @@
             (setq sgml-basic-offset 2)))
 ;            (setq indent-tabs-mode t)))
 
+;; Java sucks
+(add-hook 'java-mode-hook (lambda ()
+                            (setq c-basic-offset 4
+                                  tab-width 4
+                                  indent-tabs-mode nil)))
+
 ;; Arch Linux only
 (when (eq system-type 'gnu/linux)
   ;; For Racket/Scheme
   (require 'quack)
   ;; Haskell mode
-  (add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/")
   (require 'haskell-mode-autoloads)
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+  (add-to-list 'Info-default-directory-list "/usr/share/emacs/site-lisp/haskell-mode/")
+;;  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+  (custom-set-variables
+  '(haskell-process-suggest-remove-import-lines t)
+  '(haskell-process-auto-import-loaded-modules t)
+  '(haskell-process-log t)
+  '(haskell-process-type 'cabal-repl))
+;;  '(haskell-process-type 'ghci))
+  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
+  (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
+  (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
+  (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+  (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
+  (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
+  (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
+  (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
 ;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/structured-haskell-mode")
 ;;  (require 'shm)
 ;;  (add-hook 'haskell-mode-hook 'structured-haskell-mode)
@@ -89,6 +123,9 @@
   (add-to-list 'load-path "/usr/share/emacs/scala-mode")
   (require 'scala-mode-auto)
   (add-to-list 'auto-mode-alist '("\\.sbt\\'" . scala-mode))
+  ;; Rust Mode
+  (autoload 'rust-mode "rust-mode" "Rust mode" t)
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
   ;; Erlang Mode
 ;;  (add-to-list 'load-path "/usr/lib/erlang/lib/tools-2.6.14/emacs")
 ;;  (require 'erlang-start)
@@ -147,6 +184,10 @@ specified by the user."
                             nil
                             words))))
     (insert (string-unlines wrapped))))
+
+(defun wrap75 ()
+  (interactive)
+  (line-wrap-region 75))
 
 (defun lorem ()
   "Insert the first paragraph of Lorem Ipsum."
@@ -207,10 +248,16 @@ Sed et rutrum velit."))
   (interactive "sBlock name: ")
   (progn
     (insert (string-concat (list "\\begin{" name "}")))
+    (beginning-of-line)
+    (indent-according-to-mode)
+    (end-of-line)
     (newline)
     (save-excursion
       (newline)
-      (insert (string-concat (list "\\end{" name "}"))))))
+      (insert (string-concat (list "\\end{" name "}")))
+      (beginning-of-line)
+      (indent-according-to-mode))
+    (indent-according-to-mode)))
 
 (global-set-key (kbd "C-c b") 'tex-block)
 
@@ -668,6 +715,11 @@ The result of `f` on the last item of the list is returned."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(flycheck-check-syntax-automatically (quote (save mode-enabled)))
+ '(haskell-process-auto-import-loaded-modules t)
+ '(haskell-process-log t)
+ '(haskell-process-suggest-remove-import-lines t)
+ '(haskell-process-type (quote ghci))
  '(quack-programs (quote ("mzscheme" "bigloo" "csi" "csi -hygienic" "gosh" "gracket" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "racket" "racket -il typed/racket" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -675,3 +727,4 @@ The result of `f` on the last item of the list is returned."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'downcase-region 'disabled nil)

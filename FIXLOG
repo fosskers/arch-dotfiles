@@ -1,5 +1,21 @@
 Log of Various Fixes
 --------------------
+2014 Nov 15 - It seems like grub-legacy doesn't load multiple images,
+              hence the kernel panics. I've removed the offending
+              entry from my `menu.lst` until there's a solution.
+
+2014 Nov 15 - Going to sit forever on 340xx branch of nvidia drivers.
+              Replaced the stock `nvidia` packages with these:
+              - nvidia-340xx
+              - nvidia-340xx-utils
+              - nvidia-340xx-libgl
+              - lib32-nvidia-340xx-utils
+              - lib32-nvidia-340xx-libgl
+              And now my Xserver is alive again.
+
+2014 Nov 14 - Big update. Had to do some manual magic to get java
+              installed properly. X server is dead. `ucodes` problem?
+
 2014 Jul 03 - Created `/etc/pm/power.d/laptop-mode` as a dummy hook
               to try and stop conflicts between laptop-mode-tools and
               pm-utils. My mouse was freezing a lot, even on AC.

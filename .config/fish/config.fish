@@ -7,7 +7,7 @@ set fish_greeting
 set -x EDITOR "emacs"
 
 # PATH
-set -x PATH '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/opt/java/bin'
+set -x PATH '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin'
 
 set PATH (find $PATH -type d)
 
@@ -15,9 +15,9 @@ set -x PYTHONPATH '/home/colin/code/lib/pymodules/'
 
 set -x _JAVA_AWT_WM_NONREPARENTING 1
 
-#set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
+set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
 
-set -x JAVA_HOME '/opt/java'
+set -x JAVA_HOME '/usr/lib/jvm/default'
 
 set -x ARCH_HASKELL 'Colin Woodbury <colingw@gmail.com>'
 
@@ -146,11 +146,11 @@ function py
 end
 
 function e
-  emacs -nw $argv
+  emacsclient -nw $argv
 end
 
 function se
-  sudo emacs -nw $argv
+  sudo emacsclient -nw $argv
 end
 
 function a
@@ -217,7 +217,7 @@ function gl
 end
 
 function eo
-  emacs (ack -l $argv)
+  emacsclient -nw (ack -l $argv)
 end
 
 # REVAMPED COMMANDS
