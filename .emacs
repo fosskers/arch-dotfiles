@@ -60,6 +60,8 @@
 
 ;; Flycheck
 (add-hook 'after-init-hook #'global-flycheck-mode)
+(eval-after-load 'flycheck
+    '(add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
 
 ;; Hisp Mode
 (define-generic-mode 
@@ -72,9 +74,6 @@
   '("\\.hisp$")
   nil  ;; other functions to call
   "A simple mode for Hisp code.")
-
-;; Elm Mode
-(add-to-list 'auto-mode-alist '("\\.elm\\'" . haskell-mode))
 
 (add-hook 'html-mode-hook
           (lambda()
@@ -90,28 +89,37 @@
 ;; Arch Linux only
 (when (eq system-type 'gnu/linux)
   ;; For Racket/Scheme
-  (require 'quack)
+;;  (require 'quack)
   ;; Haskell mode
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/")
   (require 'haskell-mode-autoloads)
   (add-to-list 'Info-default-directory-list "/usr/share/emacs/site-lisp/haskell-mode/")
 ;;  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
   (custom-set-variables
   '(haskell-process-suggest-remove-import-lines t)
   '(haskell-process-auto-import-loaded-modules t)
-  '(haskell-process-log t)
-  '(haskell-process-type 'cabal-repl))
+  '(haskell-process-log t))
 ;;  '(haskell-process-type 'ghci))
   (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
-  (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
+  (define-key haskell-mode-map (kbd "C-c h b") 'haskell-interactive-bring)
   (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
   (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
   (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
   (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
   (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
   (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
+  (global-set-key (kbd "C-c h r") 'haskell-process-restart)
+  (define-key haskell-mode-map (kbd "C-c h t") 
+    (lambda () (interactive)
+      (if (equal 'cabal-repl haskell-process-type)
+          (progn
+            (setq haskell-process-type 'ghci)
+            (message "Now in ghci mode."))
+        (progn 
+          (setq haskell-process-type 'cabal-repl)
+          (message "Now in cabal-repl mode.")))))
 ;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/structured-haskell-mode")
 ;;  (require 'shm)
 ;;  (add-hook 'haskell-mode-hook 'structured-haskell-mode)
@@ -132,7 +140,10 @@
   ;; Markdown mode
   (autoload 'markdown-mode "markdown-mode" "Markdown mode" t)
   (setq auto-mode-alist (cons '("\\.md\\'" . markdown-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist)))
+  (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist))
+  ;; ESS (R) Mode
+  (setq load-path (cons "/usr/share/emacs/site-lisp/ess" load-path))
+  (require 'ess-site))
   ;; Web mode
 ;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/web-mode")
 ;;  (require 'web-mode)
@@ -166,6 +177,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Borrowed from: http://emacs.stackexchange.com/q/5371/3882
+(defun window-split-toggle ()
+  "Toggle between horizontal and vertical split with two windows."
+  (interactive)
+  (if (> (length (window-list)) 2)
+      (error "Can't toggle with more than 2 windows!")
+    (let ((func (if (window-full-height-p)
+                    #'split-window-vertically
+                  #'split-window-horizontally)))
+      (delete-other-windows)
+      (funcall func)
+      (save-selected-window
+        (other-window 1)
+        (switch-to-buffer (other-buffer))))))
+
 (defun line-wrap-region (len)
   "Line wraps a region so its lines aren't longer than a length
 specified by the user."
@@ -420,6 +446,14 @@ Also, if the line above is blank, nothing will happen."
 		 (insert underline))))))))
 
 (global-set-key (kbd "C-c u") 'underline-complete)
+
+;; From: http://stackoverflow.com/q/13981899
+(defun nuke-all-buffers ()
+  (interactive)
+  (mapcar 'kill-buffer (buffer-list))
+  (delete-other-windows))
+
+(global-set-key (kbd "C-x K") 'nuke-all-buffers)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LIST FUNCTIONS
@@ -719,7 +753,6 @@ The result of `f` on the last item of the list is returned."
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
  '(haskell-process-suggest-remove-import-lines t)
- '(haskell-process-type (quote ghci))
  '(quack-programs (quote ("mzscheme" "bigloo" "csi" "csi -hygienic" "gosh" "gracket" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "racket" "racket -il typed/racket" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

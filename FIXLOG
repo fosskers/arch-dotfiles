@@ -1,5 +1,10 @@
 Log of Various Fixes
 --------------------
+2014 Dec 17 - Added `haveged` to produce entropy during key generation.
+              Also nuke-n-paved old pacman keyring.
+              Had to manually reregister the keys for haskell-core
+              and the infinality fonts.
+
 2014 Nov 15 - It seems like grub-legacy doesn't load multiple images,
               hence the kernel panics. I've removed the offending
               entry from my `menu.lst` until there's a solution.

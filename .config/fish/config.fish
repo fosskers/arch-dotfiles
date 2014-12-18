@@ -7,7 +7,7 @@ set fish_greeting
 set -x EDITOR "emacs"
 
 # PATH
-set -x PATH '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin'
+set -x PATH '/home/colin/code/elm/.cabal-sandbox/bin' '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/home/colin/.gem/ruby/2.1.0/bin'
 
 set PATH (find $PATH -type d)
 
@@ -22,7 +22,7 @@ set -x JAVA_HOME '/usr/lib/jvm/default'
 set -x ARCH_HASKELL 'Colin Woodbury <colingw@gmail.com>'
 
 # BROWSER
-set -x BROWSER "chromium"
+set -x BROWSER "dwb"
 
 # RANDOM SHORTCUTS
 function dbs
@@ -227,6 +227,10 @@ end
 
 function rm
   command rm -i $argv
+end
+
+function aura
+  command aura --deutsch $argv
 end
 
 # MOUNTING SHORTCUTS

@@ -25,8 +25,8 @@ mpd_music_dir = "/home/colin/music"
 visualizer_fifo_path = "/home/colin/.mpd/mpd.fifo"
 visualizer_output_name = "my_fifo"
 visualizer_sync_interval = "10"
-visualizer_type = "wave" (spectrum/wave)
-#visualizer_type = "spectrum" (spectrum/wave)
+#visualizer_type = "wave"  # (spectrum/wave)
+visualizer_type = "spectrum" (spectrum/wave)
 
 ##
 ## Note: In order to make music visualizer work you'll
@@ -277,7 +277,7 @@ progressbar_look = "▓▒░"
 #
 #default_place_to_search_in = "database" (database/playlist)
 #
-#user_interface = "classic" (classic/alternative)
+user_interface = "alternative" #(classic/alternative)
 #
 #media_library_left_column = "a" (possible values: a,y,g,c,p, legend above)
 #
@@ -289,9 +289,9 @@ progressbar_look = "▓▒░"
 #
 #default_tag_editor_pattern = "%n - %t"
 #
-#header_visibility = "yes"
+header_visibility = "yes"
 #
-#statusbar_visibility = "yes"
+statusbar_visibility = "yes"
 #
 #titles_visibility = "yes"
 #
