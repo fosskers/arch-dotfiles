@@ -88,12 +88,10 @@
 
 ;; Arch Linux only
 (when (eq system-type 'gnu/linux)
-  ;; For Racket/Scheme
-;;  (require 'quack)
   ;; Haskell mode
-  (add-to-list 'load-path "/usr/share/emacs/site-lisp/haskell-mode/")
-  (require 'haskell-mode-autoloads)
-  (add-to-list 'Info-default-directory-list "/usr/share/emacs/site-lisp/haskell-mode/")
+  (add-to-list 'load-path "/home/colin/.emacs.d/elpa/haskell-mode-20141230.1141")
+  (load "haskell-mode-autoloads.el")
+  (add-to-list 'Info-default-directory-list "/home/colin/.emacs.d/elpa/haskell-mode-20141230.1141")
 ;;  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
@@ -143,7 +141,14 @@
   (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist))
   ;; ESS (R) Mode
   (setq load-path (cons "/usr/share/emacs/site-lisp/ess" load-path))
-  (require 'ess-site))
+  (require 'ess-site)
+  ;; Purescript mode
+;;  (add-to-list 'load-path "/home/colin/.emacs.d/elpa/purescript-mode-20140525.1952/")
+  (require 'purescript-mode)
+  ;;  (add-to-list 'Info-default-directory-list "/home/colin/.emacs.d/elpa/purescript-mode-20140525.1952/")
+  ;; Android Mode
+  (require 'android-mode)
+  (custom-set-variables '(android-mode-sdk-dir "/opt/android-sdk")))
   ;; Web mode
 ;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/web-mode")
 ;;  (require 'web-mode)
@@ -749,11 +754,18 @@ The result of `f` on the last item of the list is returned."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(android-mode-sdk-dir "/opt/android-sdk")
  '(flycheck-check-syntax-automatically (quote (save mode-enabled)))
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
  '(haskell-process-suggest-remove-import-lines t)
- '(quack-programs (quote ("mzscheme" "bigloo" "csi" "csi -hygienic" "gosh" "gracket" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "racket" "racket -il typed/racket" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi"))))
+ '(purescript-mode-hook
+   (quote
+    (capitalized-words-mode turn-on-purescript-indentation)))
+ '(quack-programs
+   (quote
+    ("mzscheme" "bigloo" "csi" "csi -hygienic" "gosh" "gracket" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "racket" "racket -il typed/racket" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi")))
+ '(visible-cursor nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
