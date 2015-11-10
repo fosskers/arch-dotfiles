@@ -63,6 +63,10 @@ function wine32() {
     env WINEARCH=win32 WINEPREFIX=~/.wine32 "$1" "$2"
 }
 
+function skywine() {
+    env WINEARCH=win32 WINEPREFIX=~/.skywine WINEDEBUG=-all "$1" "$2"
+}
+
 function grock() {
     env WINEPREFIX=~/.wine-grock "$1" "$2"
 }

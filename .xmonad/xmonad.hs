@@ -29,7 +29,7 @@ myLayout = tiled ||| Mirror tiled ||| Full
 myWorkspaces :: [String]
 myWorkspaces = clickable [ "^i(/home/colin/.xmonad/dzen2/arch_10x10.xbm) term"
 		         , "^i(/home/colin/.xmonad/dzen2/fs_01.xbm) web"	
-		         , "^i(/home/colin/.xmonad/dzen2/diskette.xbm) docs"
+		         , "^i(/home/colin/.xmonad/dzen2/diskette.xbm) work"
 		         , "^i(/home/colin/.xmonad/dzen2/pacman.xbm) games" 
 		         , "^i(/home/colin/.xmonad/dzen2/cat.xbm) etc" ]
     where clickable l = [ "^ca(1,xdotool key alt+" ++ show i ++ ")" ++ ws ++ "^ca()" |
@@ -121,16 +121,16 @@ myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
     , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
 
     -- Resize viewed windows to the correct size
-    , ((modm,               xK_n     ), refresh)
+    , ((modm,               xK_k     ), refresh)
 
     -- Move focus to the next window
     , ((modm,               xK_Tab   ), windows W.focusDown)
 
     -- Move focus to the next window
-    , ((modm,               xK_j     ), windows W.focusDown)
+    , ((modm,               xK_n     ), windows W.focusDown)
 
     -- Move focus to the previous window
-    , ((modm,               xK_k     ), windows W.focusUp  )
+    , ((modm,               xK_e     ), windows W.focusUp  )
 
     -- Move focus to the master window
     , ((modm,               xK_m     ), windows W.focusMaster  )
@@ -139,16 +139,16 @@ myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
     , ((modm .|. shiftMask, xK_Return), windows W.swapMaster)
 
     -- Swap the focused window with the next window
-    , ((modm .|. shiftMask, xK_j     ), windows W.swapDown  )
+    , ((modm .|. shiftMask, xK_n     ), windows W.swapDown  )
 
     -- Swap the focused window with the previous window
-    , ((modm .|. shiftMask, xK_k     ), windows W.swapUp    )
+    , ((modm .|. shiftMask, xK_e     ), windows W.swapUp    )
 
     -- Shrink the master area
     , ((modm,               xK_h     ), sendMessage Shrink)
 
     -- Expand the master area
-    , ((modm,               xK_l     ), sendMessage Expand)
+    , ((modm,               xK_o     ), sendMessage Expand)
 
     -- Push window back into tiling
     , ((modm,               xK_t     ), withFocused $ windows . W.sink)
@@ -187,7 +187,7 @@ myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
     -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
     --
     [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
-        | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
+        | (key, sc) <- zip [xK_w, xK_r] [0..]
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
 background = "#000000"

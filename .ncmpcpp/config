@@ -357,7 +357,7 @@ cyclic_scrolling = "yes"
 #
 #ask_before_clearing_main_playlist = "no"
 #
-clock_display_seconds = "yes"
+clock_display_seconds = "no"
 #
 #display_volume_level = "yes"
 #

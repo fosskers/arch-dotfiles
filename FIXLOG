@@ -1,5 +1,22 @@
 Log of Various Fixes
 --------------------
+2015 Oct 15 - Filesystem broke somehow. When GRUB attempted to load stage 2,
+              it dumped instead to the GRUB shell.
+              Used a live USB to boot in, and fixed everything with:
+              `fsck.ext4 -y -f /dev/sda3`
+
+2015 Sep 24 - An `ncurses` update broke everything that depended on it,
+              including `fish`. This meant I couldn't open any programs,
+              or even log in once I had restarted.
+              I used a live Arch USB (hold down that C button for a long time)
+              to manually mount my Arch, then I updated `ncurses`,
+              `lib32-ncurses` and `fish`.
+
+2015 May 03 - Switched to Colemak keyboard.
+              Check settings: `localectl status`
+              Change VC: `localectl set-keymap --no-convert colemak`
+              Change X11: `localectl set-x11-keymap --no-convert us pc104 colemak`
+
 2014 Dec 17 - Added `haveged` to produce entropy during key generation.
               Also nuke-n-paved old pacman keyring.
               Had to manually reregister the keys for haskell-core
@@ -43,9 +60,11 @@ Log of Various Fixes
      	      Installed `jmtpfs` and used `jmtpfs ~/mnt/mtp` to mount my phone
 	      to the computer. Then I just copy over files as needed.
 	      Use `fusermount -u ~/mnt/mtp` to unmount.
-	      Note: If the screen locks at any point, the mount seems to revert
-	      to read-only status. You need to remount if this happens.
-	      One solution is to set the phone's screen lock time to a long time.
+	      Note: If the screen locks at any point, the
+              mount seems to revert to read-only status.
+              You need to remount if this happens. One
+              solution is to set the phone's screen lock time to
+              a long time.
 
 2013 Nov 17 - Got rid of ldconfig error messages by deleting:
      	      /usr/lib32/libnvcuvid.so.319.23

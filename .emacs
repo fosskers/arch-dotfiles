@@ -14,6 +14,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lambda character
 (global-set-key (kbd "M-l") (lambda () (interactive) (insert "\u03bb")))
+(global-set-key (kbd "M-z") (lambda () (interactive) (insert "ℤ")))
 
 (electric-pair-mode +1)
 
@@ -56,12 +57,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'pomodoro)
+(pomodoro-add-to-mode-line)
+
+;; Helm
+(require 'helm-config)
+(helm-mode 1)
+
 (require 'generic-x)
 
 ;; Flycheck
 (add-hook 'after-init-hook #'global-flycheck-mode)
 (eval-after-load 'flycheck
-    '(add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
+  '(add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
+(add-hook 'c-mode-hook
+          (lambda () (setq flycheck-clang-include-path
+                           (list "/usr/include/freetype2"))))
 
 ;; Hisp Mode
 (define-generic-mode 
@@ -89,9 +100,11 @@
 ;; Arch Linux only
 (when (eq system-type 'gnu/linux)
   ;; Haskell mode
-  (add-to-list 'load-path "/home/colin/.emacs.d/elpa/haskell-mode-20141230.1141")
-  (load "haskell-mode-autoloads.el")
-  (add-to-list 'Info-default-directory-list "/home/colin/.emacs.d/elpa/haskell-mode-20141230.1141")
+  (require 'haskell-interactive-mode)
+  (require 'haskell-process)
+  ;;(add-to-list 'load-path "/home/colin/.emacs.d/elpa/haskell-mode-20141230.1141")
+  ;;(load "haskell-mode-autoloads.el")
+  ;;(add-to-list 'Info-default-directory-list "/home/colin/.emacs.d/elpa/haskell-mode-20141230.1141")
 ;;  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
@@ -126,8 +139,8 @@
   (autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
   (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
   ;; Scala Mode
-  (add-to-list 'load-path "/usr/share/emacs/scala-mode")
-  (require 'scala-mode-auto)
+;  (add-to-list 'load-path "/usr/share/emacs/scala-mode")
+;  (require 'scala-mode-auto)
   (add-to-list 'auto-mode-alist '("\\.sbt\\'" . scala-mode))
   ;; Rust Mode
   (autoload 'rust-mode "rust-mode" "Rust mode" t)
@@ -139,9 +152,6 @@
   (autoload 'markdown-mode "markdown-mode" "Markdown mode" t)
   (setq auto-mode-alist (cons '("\\.md\\'" . markdown-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist))
-  ;; ESS (R) Mode
-  (setq load-path (cons "/usr/share/emacs/site-lisp/ess" load-path))
-  (require 'ess-site)
   ;; Purescript mode
 ;;  (add-to-list 'load-path "/home/colin/.emacs.d/elpa/purescript-mode-20140525.1952/")
   (require 'purescript-mode)
@@ -175,13 +185,44 @@
       (backward-char)
       (newline-and-indent))))
 
-(global-set-key (kbd "C-c g") 'java-getter)
-
 ;(string-init (car (cdr (split-string "wee woo"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun whack-whitespace (arg)
+  "Delete all white space from point to the next word.  With prefix ARG
+    delete across newlines as well.  The only danger in this is that you
+    don't have to actually be at the end of a word to make it work.  It
+    skips over to the next whitespace and then whacks it all to the next
+    word."
+  (interactive "P")
+  (let ((regexp (if arg "[ \t\n]+" "[ \t]+")))
+    (re-search-forward regexp nil t)
+    (replace-match "" nil nil)))
+
+(defun japanese (text)
+  "Insert some Japanese text into a LaTeX file."
+  (interactive "sText: ")
+  (insert (string-concat (list "\\begin{CJK}{UTF8}{min}" text "\\end{CJK}"))))
+
+(global-set-key (kbd "C-c j") 'japanese)
+
+(defun wrap-strings (start end)
+  "Wrap each string in a region with some given strings."
+  (interactive "sStart: \nsEnd: ")
+  (let* ((lines (lines-from-region))
+         (fixed (map (lambda (l) (string-concat (list start l end))) lines)))
+    (insert (string-unlines fixed))))
+
+(global-set-key (kbd "C-c g") 'goto-line)
+
+(defun count-chars-region ()
+  "Count the number of chars in a region."
+  (interactive)
+  (let ((len (length (filter-buffer-substring (mark) (point) nil))))
+    (message "Total chars: %d" len)))
+
 ;; Borrowed from: http://emacs.stackexchange.com/q/5371/3882
 (defun window-split-toggle ()
   "Toggle between horizontal and vertical split with two windows."
@@ -219,6 +260,28 @@ specified by the user."
 (defun wrap75 ()
   (interactive)
   (line-wrap-region 75))
+
+(defun line-wrap-jap (len)
+  "Line wrap a region of Japanese characters. Assumed to have no spaces."
+  (interactive "nNew line length: ")
+  (let* ((chars (string-to-chars (string-concat (lines-from-region))))
+         (wrapped (foldl
+                   (lambda (acc char)
+                     (if (null acc)
+                         (list (list char))
+                       (let ((head (car acc)))
+                         (if (>= len (+ 1 (length head)))
+                             (cons (cons char head) (cdr acc))
+                           (cons (list char) acc)))))
+                   nil
+                   chars))
+         (fixed (mapcar (lambda (cs) (string-from-chars (reverse cs)))
+                        wrapped)))
+    (insert (string-unlines (reverse fixed)))))
+
+(defun wrap-jap-38 ()
+  (interactive)
+  (line-wrap-jap 38))
 
 (defun lorem ()
   "Insert the first paragraph of Lorem Ipsum."
@@ -511,6 +574,7 @@ Also, if the line above is blank, nothing will happen."
   (string= item ""))
 
 (defun string-concat (strings)
+  "Concatinate a list of strings together."
   (mapconcat 'identity strings ""))
 
 (defun string-replicate (n item)
@@ -531,6 +595,14 @@ Also, if the line above is blank, nothing will happen."
 (defun string-reverse (item)
   "Reverses all the chars in a given string."
   (apply 'string (reverse (string-to-list item))))
+
+(defun string-from-chars (chars)
+  "[Char] -> String"
+  (concat chars))
+
+(defun string-to-chars (item)
+  "String -> [Char]"
+  (string-to-list item))
 
 ; A whitespace is `32'
 ; A japanese whitespace is `12288'
@@ -660,6 +732,14 @@ Also, if the line above is blank, nothing will happen."
   "Groups by equality."
   (group-by 'equal items))
 
+(defun id (x)
+  "Returns what it's given."
+  x)
+
+(defun compose (f g)
+  "Compose two functions together."
+  (lambda (x) (funcall f (funcall g x))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NUMBER STUFF
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -684,9 +764,6 @@ BUG: Recursion depth limit destroys this."
       nil
     (cons start (range (1+ start) end))))
 
-(defun id (x)
-  "Returns what it's given."
-  x)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OTHER FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -756,9 +833,15 @@ The result of `f` on the last item of the list is returned."
  ;; If there is more than one, they won't work right.
  '(android-mode-sdk-dir "/opt/android-sdk")
  '(flycheck-check-syntax-automatically (quote (save mode-enabled)))
+ '(flycheck-python-flake8-executable "flake8-python2")
+ '(flycheck-scalastyle-jar "/home/colin/code/scala/scalastyle.jar")
+ '(flycheck-scalastylerc "/home/colin/code/scala/scalastyle_config.xml")
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
+ '(haskell-process-show-debug-tips nil)
  '(haskell-process-suggest-remove-import-lines t)
+ '(pomodoro-break-time 3)
+ '(pomodoro-long-break-time 30)
  '(purescript-mode-hook
    (quote
     (capitalized-words-mode turn-on-purescript-indentation)))

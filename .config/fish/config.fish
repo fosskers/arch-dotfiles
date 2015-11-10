@@ -7,7 +7,9 @@ set fish_greeting
 set -x EDITOR "emacs"
 
 # PATH
-set -x PATH '/home/colin/code/elm/.cabal-sandbox/bin' '/home/colin/code/haskell/cabal/.cabal-sandbox/bin' '/home/colin/code/playground/purescript/.cabal-sandbox/bin' '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/home/colin/.gem/ruby/2.1.0/bin' '/opt/android-sdk/tools'
+set -x PATH '/home/colin/code/haskell/cabal/.cabal-sandbox/bin' '/home/colin/code/playground/purescript/.cabal-sandbox/bin' '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/home/colin/.gem/ruby/2.1.0/bin'
+
+set -x CC 'clang'
 
 set PATH (find $PATH -type d)
 
@@ -71,10 +73,6 @@ end
 
 function c
   clear
-end
-
-function cl
-  clear
   ls
 end
 
@@ -97,7 +95,7 @@ function p
 end
 
 function hdoc
-  icecat /usr/share/doc/ghc/html/libraries/index.html &
+  qutebrowser /usr/share/doc/ghc/html/libraries/index.html &
 end
 
 function batt
@@ -143,6 +141,10 @@ end
 
 function py
   python $argv
+end
+
+function p2
+  python2 $argv
 end
 
 function e
@@ -213,7 +215,7 @@ function gc
 end
 
 function gl
-  git log
+  git log --graph
 end
 
 function eo
@@ -227,10 +229,6 @@ end
 
 function rm
   command rm -i $argv
-end
-
-function aura
-  command aura --deutsch $argv
 end
 
 # MOUNTING SHORTCUTS
