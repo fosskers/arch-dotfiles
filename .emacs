@@ -99,6 +99,9 @@
 
 ;; Arch Linux only
 (when (eq system-type 'gnu/linux)
+  ;; Ensime
+  (require 'ensime)
+  (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
   ;; Haskell mode
   (require 'haskell-interactive-mode)
   (require 'haskell-process)
@@ -109,10 +112,10 @@
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
   (custom-set-variables
-  '(haskell-process-suggest-remove-import-lines t)
-  '(haskell-process-auto-import-loaded-modules t)
-  '(haskell-process-log t))
-;;  '(haskell-process-type 'ghci))
+   '(haskell-process-suggest-remove-import-lines t)
+   '(haskell-process-auto-import-loaded-modules t)
+   '(haskell-process-log t)
+   '(haskell-process-type 'stack-ghci))
   (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
   (define-key haskell-mode-map (kbd "C-c h b") 'haskell-interactive-bring)
   (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
@@ -124,45 +127,41 @@
   (global-set-key (kbd "C-c h r") 'haskell-process-restart)
   (define-key haskell-mode-map (kbd "C-c h t") 
     (lambda () (interactive)
-      (if (equal 'cabal-repl haskell-process-type)
+      (if (equal 'stack-ghci haskell-process-type)
           (progn
-            (setq haskell-process-type 'ghci)
-            (message "Now in ghci mode."))
+            (setq haskell-process-type 'cabal-repl)
+            (message "Now in cabal-repl mode."))
         (progn 
-          (setq haskell-process-type 'cabal-repl)
-          (message "Now in cabal-repl mode.")))))
-;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/structured-haskell-mode")
-;;  (require 'shm)
-;;  (add-hook 'haskell-mode-hook 'structured-haskell-mode)
-  ;;(setq shm-program-name "/usr/bin/structured-haskell-mode")
+          (setq haskell-process-type 'stack-ghci)
+          (message "Now in stack mode.")))))
+
   ;; PKGBUILD mode
   (autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
-  (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode)) auto-mode-alist))
+  (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode))
+                                auto-mode-alist))
+
   ;; Scala Mode
 ;  (add-to-list 'load-path "/usr/share/emacs/scala-mode")
 ;  (require 'scala-mode-auto)
-  (add-to-list 'auto-mode-alist '("\\.sbt\\'" . scala-mode))
+  ;(add-to-list 'auto-mode-alist '("\\.sbt\\'" . scala-mode))
   ;; Rust Mode
   (autoload 'rust-mode "rust-mode" "Rust mode" t)
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode)))
   ;; Erlang Mode
 ;;  (add-to-list 'load-path "/usr/lib/erlang/lib/tools-2.6.14/emacs")
 ;;  (require 'erlang-start)
-  ;; Markdown mode
-  (autoload 'markdown-mode "markdown-mode" "Markdown mode" t)
-  (setq auto-mode-alist (cons '("\\.md\\'" . markdown-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.markdown\\'" . markdown-mode) auto-mode-alist))
   ;; Purescript mode
 ;;  (add-to-list 'load-path "/home/colin/.emacs.d/elpa/purescript-mode-20140525.1952/")
-  (require 'purescript-mode)
+;;  (require 'purescript-mode)
   ;;  (add-to-list 'Info-default-directory-list "/home/colin/.emacs.d/elpa/purescript-mode-20140525.1952/")
   ;; Android Mode
-  (require 'android-mode)
-  (custom-set-variables '(android-mode-sdk-dir "/opt/android-sdk")))
+;;  (require 'android-mode)
+;;  (custom-set-variables '(android-mode-sdk-dir "/opt/android-sdk")))
   ;; Web mode
 ;;  (add-to-list 'load-path "/usr/share/emacs/site-lisp/web-mode")
 ;;  (require 'web-mode)
-;;  (add-to-list 'auto-mode-alist '("\\.html$" . web-mode)))
+  ;;  (add-to-list 'auto-mode-alist '("\\.html$" . web-mode)))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVA
@@ -388,7 +387,7 @@ Sed et rutrum velit."))
 	 (all-words-by-line (map 'string-words lines)))
     (print-all-chart-rows longest all-words-by-line)))
 	 
-(global-set-key (kbd "C-c C-c") 'chartify)
+;(global-set-key (kbd "C-c C-c") 'chartify)
 
 (defun longest-word (words)
   "Given a list of words, gives the length of the longest one."
@@ -834,20 +833,17 @@ The result of `f` on the last item of the list is returned."
  '(android-mode-sdk-dir "/opt/android-sdk")
  '(flycheck-check-syntax-automatically (quote (save mode-enabled)))
  '(flycheck-python-flake8-executable "flake8-python2")
- '(flycheck-scalastyle-jar "/home/colin/code/scala/scalastyle.jar")
- '(flycheck-scalastylerc "/home/colin/code/scala/scalastyle_config.xml")
+; '(flycheck-scalastyle-jar "/home/colin/code/scala/scalastyle.jar")
+; '(flycheck-scalastylerc "/home/colin/code/scala/scalastyle_config.xml")
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
  '(haskell-process-show-debug-tips nil)
  '(haskell-process-suggest-remove-import-lines t)
- '(pomodoro-break-time 3)
+ '(pomodoro-break-time 2)
  '(pomodoro-long-break-time 30)
  '(purescript-mode-hook
    (quote
     (capitalized-words-mode turn-on-purescript-indentation)))
- '(quack-programs
-   (quote
-    ("mzscheme" "bigloo" "csi" "csi -hygienic" "gosh" "gracket" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "racket" "racket -il typed/racket" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi")))
  '(visible-cursor nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

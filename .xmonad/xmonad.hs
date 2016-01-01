@@ -39,7 +39,7 @@ myManageHook :: Query (Endo WindowSet)
 myManageHook = composeAll
                [ resource =? "dmenu"    --> doFloat
                , resource =? "chromium" --> doShift (myWorkspaces !! 1)
-               , resource =? "icecat"   --> doShift (myWorkspaces !! 1)
+               , resource =? "firefox"   --> doShift (myWorkspaces !! 1)
                , resource =? "gimp"     --> doShift (myWorkspaces !! 2)
                , resource =? "evince"   --> doShift (myWorkspaces !! 2)
                , fmap ("libreoffice" `isInfixOf`) className --> doShift (myWorkspaces !! 2)

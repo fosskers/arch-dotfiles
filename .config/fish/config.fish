@@ -4,12 +4,16 @@
 set fish_greeting
 
 # EDITOR
-set -x EDITOR "emacs"
+set -x EDITOR "emacs -q"
 
 # PATH
-set -x PATH '/home/colin/code/haskell/cabal/.cabal-sandbox/bin' '/home/colin/code/playground/purescript/.cabal-sandbox/bin' '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/home/colin/.gem/ruby/2.1.0/bin'
+set -x PATH '/home/colin/code/haskell/cabal/.cabal-sandbox/bin' '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/home/colin/.gem/ruby/2.1.0/bin' '/opt/cuda/bin'
 
-set -x CC 'clang'
+# FOR ADENDA DEV
+set -x GOOGLE_APPLICATION_CREDENTIALS '/home/colin/code/AdendaServer/Source/AdendaServer/conf/adenda-server-0d72fe7d5d09.json'
+
+# set -x CC 'clang'
+set -x CC 'gcc'
 
 set PATH (find $PATH -type d)
 
@@ -17,7 +21,7 @@ set -x PYTHONPATH '/home/colin/code/lib/pymodules/'
 
 set -x _JAVA_AWT_WM_NONREPARENTING 1
 
-set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
+#set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true' #' -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
 
 set -x JAVA_HOME '/usr/lib/jvm/default'
 
