@@ -19,57 +19,57 @@ import           XMonad.Util.Run (spawnPipe)
 
 myLayout :: Choose Tall (Choose (Mirror Tall) Full) a
 myLayout = tiled ||| Mirror tiled ||| Full
-    where 
-      tiled = Tall nmast delta ratio  -- All windows will spaced evenly.
-      nmast = 1                       -- Number of windows in master pane.
-      ratio = 1 / 2                   -- Size of master pane.
-      delta = 3 / 100                 -- % of screen to increment on resize.
+  where tiled = Tall nmast delta ratio  -- All windows will spaced evenly
+        nmast = 1                       -- Number of windows in master pane
+        ratio = 1 / 2                   -- Size of master pane
+        delta = 3 / 100                 -- % of screen to increment on resize
 
 -- Declare workspaces and rules for applications
 myWorkspaces :: [String]
-myWorkspaces = clickable [ "^i(/home/colin/.xmonad/dzen2/arch_10x10.xbm) term"
-		         , "^i(/home/colin/.xmonad/dzen2/fs_01.xbm) web"	
-		         , "^i(/home/colin/.xmonad/dzen2/diskette.xbm) work"
-		         , "^i(/home/colin/.xmonad/dzen2/pacman.xbm) games" 
-		         , "^i(/home/colin/.xmonad/dzen2/cat.xbm) etc" ]
-    where clickable l = [ "^ca(1,xdotool key alt+" ++ show i ++ ")" ++ ws ++ "^ca()" |
-                          (i,ws) <- zip [1..] l ]
+myWorkspaces = map clickable $ zip [1..]
+  [ "^i(/home/colin/.xmonad/dzen2/arch_10x10.xbm) term"
+  , "^i(/home/colin/.xmonad/dzen2/fs_01.xbm) web"
+  , "^i(/home/colin/.xmonad/dzen2/diskette.xbm) work"
+  , "^i(/home/colin/.xmonad/dzen2/pacman.xbm) games" 
+  , "^i(/home/colin/.xmonad/dzen2/cat.xbm) etc" ]
+    where clickable (i,ws) = "^ca(1,xdotool key alt+" ++ show i ++ ")" ++ ws ++ "^ca()"
 
 myManageHook :: Query (Endo WindowSet)
 myManageHook = composeAll
-               [ resource =? "dmenu"    --> doFloat
-               , resource =? "chromium" --> doShift (myWorkspaces !! 1)
-               , resource =? "firefox"   --> doShift (myWorkspaces !! 1)
-               , resource =? "gimp"     --> doShift (myWorkspaces !! 2)
-               , resource =? "evince"   --> doShift (myWorkspaces !! 2)
-               , fmap ("libreoffice" `isInfixOf`) className --> doShift (myWorkspaces !! 2)
-               , fmap ("Steam" `isPrefixOf`) className --> doShift (myWorkspaces !! 3)
-               , resource =? "dolphin-emu" --> doShift (myWorkspaces !! 3)
-               , fmap ("Battle" `isInfixOf`) className --> doShift (myWorkspaces !! 3)
-               , resource =? "qutebrowser" --> doShift (myWorkspaces !! 1)
-               ]
+  [ resource =? "dmenu"    --> doFloat
+  , resource =? "chromium" --> doShift (myWorkspaces !! 1)
+  , resource =? "firefox"  --> doShift (myWorkspaces !! 1)
+  , resource =? "gimp"     --> doShift (myWorkspaces !! 2)
+  , resource =? "evince"   --> doShift (myWorkspaces !! 2)
+  , fmap ("libreoffice" `isInfixOf`) className --> doShift (myWorkspaces !! 2)
+  , fmap ("Steam" `isPrefixOf`) className --> doShift (myWorkspaces !! 3)
+  , resource =? "dolphin-emu" --> doShift (myWorkspaces !! 3)
+  , fmap ("Battle" `isInfixOf`) className --> doShift (myWorkspaces !! 3)
+  , resource =? "qutebrowser" --> doShift (myWorkspaces !! 1)
+  ]
 
 newManageHook :: Query (Endo WindowSet)
-newManageHook = myManageHook <+> manageHook defaultConfig <+> manageDocks 
+newManageHook = manageDocks <+> myManageHook <+> manageHook def
 
 myLogHook :: Handle -> X ()
-myLogHook h = dynamicLogWithPP $ defaultPP {
-		  ppCurrent         = dzenColor foreground background . pad
-		, ppVisible         = dzenColor white0 background . pad
-		, ppHidden          = dzenColor white0 background . pad
-		, ppHiddenNoWindows = dzenColor black0 background . pad
-		, ppWsSep           = ""
-		, ppSep             = "   "
-		, ppOrder           = \(ws:l:t:_) -> [ws,l]
-		, ppOutput          = hPutStrLn h
-		, ppLayout          = wrap "^ca(1,xdotool key alt+space)" "^ca()" . dzenColor white1 background .
-		                      (\case
-				         "Full"                    -> "^i(/home/colin/.xmonad/dzen2/layout_full.xbm)"
-				         "Spacing 5 ResizableTall" -> "^i(/home/colin/.xmonad/dzen2/layout_tall.xbm)"
-				         "ResizableTall"           -> "^i(/home/colin/.xmonad/dzen2/layout_tall.xbm)"
-				         "SimplestFloat"           -> "^i(/home/colin/.xmonad/dzen2/mouse_01.xbm)"
-				         "Circle"                  -> "^i(/home/colin/.xmonad/dzen2/full.xbm)"
-				         _                         -> "^i(/home/colin/.xmonad/dzen2/grid.xbm)" ) }
+myLogHook h = dynamicLogWithPP $ def
+  { ppCurrent         = dzenColor foreground background . pad
+  , ppVisible         = dzenColor white0 background . pad
+  , ppHidden          = dzenColor white0 background . pad
+  , ppHiddenNoWindows = dzenColor black0 background . pad
+  , ppWsSep           = ""
+  , ppSep             = "   "
+  , ppOrder           = \(ws:l:_:_) -> [ws,l]
+  , ppOutput          = hPutStrLn h
+  , ppLayout          = wrap "^ca(1,xdotool key alt+space)" "^ca()"
+    . dzenColor white1 background
+    . (\case
+          "Full" -> "^i(/home/colin/.xmonad/dzen2/layout_full.xbm)"
+          "Spacing 5 ResizableTall" -> "^i(/home/colin/.xmonad/dzen2/layout_tall.xbm)"
+          "ResizableTall" -> "^i(/home/colin/.xmonad/dzen2/layout_tall.xbm)"
+          "SimplestFloat" -> "^i(/home/colin/.xmonad/dzen2/mouse_01.xbm)"
+          "Circle"        -> "^i(/home/colin/.xmonad/dzen2/full.xbm)"
+          _               -> "^i(/home/colin/.xmonad/dzen2/grid.xbm)" ) }
 
 myXmonadBar :: String
 myXmonadBar = "dzen2 -x '0' -y '0' -h '12' -w '300' -ta 'l' -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn " ++ myFont
@@ -81,21 +81,23 @@ main :: IO ()
 main = do
   dzenLeftBar  <- spawnPipe myXmonadBar
   dzenRightBar <- spawnPipe myStatusBar
-  xmonad $ ewmh defaultConfig
-             { terminal           = myTerminal
-	     , borderWidth        = 1
-	     , normalBorderColor  = black0
-             , focusFollowsMouse  = False
-	     , focusedBorderColor = red1
-	     , modMask            = mod4Mask
-             , keys               = myKeys
-	     , layoutHook         = avoidStruts myLayout
-	     , workspaces         = myWorkspaces
-	     , manageHook         = newManageHook
-	     , handleEventHook    = fullscreenEventHook <+> docksEventHook
-	     , startupHook        = setWMName "LG3D"
-	     , logHook            = myLogHook dzenLeftBar >> setWMName "LG3D" }
+  xmonad . ewmh $ myConfig dzenLeftBar
 
+myConfig dlb = def
+  { terminal           = myTerminal
+  , borderWidth        = 1
+  , normalBorderColor  = black0
+  , focusFollowsMouse  = False
+  , focusedBorderColor = red1
+  , modMask            = mod4Mask
+  , keys               = myKeys
+  , layoutHook         = avoidStruts myLayout
+  , workspaces         = myWorkspaces
+  , manageHook         = newManageHook
+  , handleEventHook    = fullscreenEventHook <+> docksEventHook
+  , startupHook        = setWMName "LG3D"
+  , logHook            = myLogHook dlb >> setWMName "LG3D" }
+  
 myTerminal :: String
 myTerminal = "urxvt"
 
@@ -104,60 +106,60 @@ myFont = "xft:lime:size=6"  --":bold:size=8"
 
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
-    -- launch a terminal
-    [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
+  -- launch a terminal
+  [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
 
-    -- launch dmenu
-    -- I CHANGED THIS 2011 OCT 15
-    , ((modm,               xK_p     ), spawn "dmenu_run")
+  -- launch dmenu
+  -- I CHANGED THIS 2011 OCT 15
+  , ((modm,               xK_p     ), spawn "dmenu_run")
 
     -- close focused window
-    , ((modm .|. shiftMask, xK_c     ), kill)
+  , ((modm .|. shiftMask, xK_c     ), kill)
 
      -- Rotate through the available layout algorithms
-    , ((modm,               xK_space ), sendMessage NextLayout)
+  , ((modm,               xK_space ), sendMessage NextLayout)
 
     --  Reset the layouts on the current workspace to default
-    , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
+  , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
 
     -- Resize viewed windows to the correct size
-    , ((modm,               xK_k     ), refresh)
+  , ((modm,               xK_k     ), refresh)
 
     -- Move focus to the next window
-    , ((modm,               xK_Tab   ), windows W.focusDown)
+  , ((modm,               xK_Tab   ), windows W.focusDown)
 
     -- Move focus to the next window
-    , ((modm,               xK_n     ), windows W.focusDown)
+  , ((modm,               xK_n     ), windows W.focusDown)
 
     -- Move focus to the previous window
-    , ((modm,               xK_e     ), windows W.focusUp  )
+  , ((modm,               xK_e     ), windows W.focusUp  )
 
     -- Move focus to the master window
-    , ((modm,               xK_m     ), windows W.focusMaster  )
+  , ((modm,               xK_m     ), windows W.focusMaster  )
 
     -- Swap the focused window and the master window
-    , ((modm .|. shiftMask, xK_Return), windows W.swapMaster)
+  , ((modm .|. shiftMask, xK_Return), windows W.swapMaster)
 
     -- Swap the focused window with the next window
-    , ((modm .|. shiftMask, xK_n     ), windows W.swapDown  )
+  , ((modm .|. shiftMask, xK_n     ), windows W.swapDown  )
 
     -- Swap the focused window with the previous window
-    , ((modm .|. shiftMask, xK_e     ), windows W.swapUp    )
+  , ((modm .|. shiftMask, xK_e     ), windows W.swapUp    )
 
     -- Shrink the master area
-    , ((modm,               xK_h     ), sendMessage Shrink)
+  , ((modm,               xK_h     ), sendMessage Shrink)
 
     -- Expand the master area
-    , ((modm,               xK_o     ), sendMessage Expand)
+  , ((modm,               xK_o     ), sendMessage Expand)
 
     -- Push window back into tiling
-    , ((modm,               xK_t     ), withFocused $ windows . W.sink)
+  , ((modm,               xK_t     ), withFocused $ windows . W.sink)
 
     -- Increment the number of windows in the master area
-    , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
+  , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
 
     -- Deincrement the number of windows in the master area
-    , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
+  , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
 
     -- Toggle the status bar gap
     -- Use this binding with avoidStruts from Hooks.ManageDocks.
@@ -166,29 +168,29 @@ myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
     -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
 
     -- Quit xmonad
-    , ((modm .|. shiftMask, xK_q     ), io exitSuccess)
+  , ((modm .|. shiftMask, xK_q     ), io exitSuccess)
 
     -- Restart xmonad
-    , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
-    ]
-    ++
+  , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+  ]
+  ++
 
-    --
-    -- mod-[1..9], Switch to workspace N
-    -- mod-shift-[1..9], Move client to workspace N
-    --
-    [((m .|. modm, k), windows $ f i)
-        | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
-        , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
-    ++
+  --
+  -- mod-[1..9], Switch to workspace N
+  -- mod-shift-[1..9], Move client to workspace N
+  --
+  [((m .|. modm, k), windows $ f i)
+  | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
+  , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+  ++
 
-    --
-    -- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2, or 3
-    -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
-    --
-    [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
-        | (key, sc) <- zip [xK_w, xK_r] [0..]
-        , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+  --
+  -- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2, or 3
+  -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
+  --
+  [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
+  | (key, sc) <- zip [xK_w, xK_r] [0..]
+  , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
 background = "#000000"
 foreground = "#ffffff"
