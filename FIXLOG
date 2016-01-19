@@ -1,5 +1,13 @@
 Log of Various Fixes
 --------------------
+2016 Jan 19 - Switched to `ibus` from `uim`. Japanese input works in
+              qutebrowser now. Changed input switching from Super+i
+              to C+M+i.
+              For some reason, `rime` (Canto input) doesn't work right yet.
+              I can get the mode launched, but it refuses to type anything
+              but roman characters, and I can't seem to change submodes
+              within Rime.
+
 2015 Oct 15 - Filesystem broke somehow. When GRUB attempted to load stage 2,
               it dumped instead to the GRUB shell.
               Used a live USB to boot in, and fixed everything with:

@@ -48,6 +48,10 @@ URxvt.keysym.M-s:           perl:keyboard-select:search
 ! For xshogi
 XShogi*font: xft:Inconsolata-g:bold:size=8
 
+! For Japanese/Cantonese input
+URxvt.inputMethod: ibus
+URxvt.preeditType: OverTheSpot
+
 !Xft.dpi:		    96
 !Xft.rgba:		    rgb
 !Xft.antialias: 		    true
