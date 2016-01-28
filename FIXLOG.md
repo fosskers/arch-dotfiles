@@ -1,5 +1,11 @@
 Log of Various Fixes
 --------------------
+2016 Jan 27 - Got `rime` working. Turned out I was missing Chinese fonts.
+              After restarting the ibus daemon with:
+                `ibus-daemon -drx`
+              everything works. I've set `rime` up to interpret the Yale
+              romanization scheme.
+
 2016 Jan 19 - Switched to `ibus` from `uim`. Japanese input works in
               qutebrowser now. Changed input switching from Super+i
               to C+M+i.
