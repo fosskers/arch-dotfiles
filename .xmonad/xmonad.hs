@@ -19,7 +19,8 @@ import           XMonad.Util.Run (spawnPipe)
 
 ---
 
--- Consider `smartSpacing 5`
+-- When you get a bigger moniter, consider `smartSpacing 5`
+-- for automatic gaps between windows
 myLayout :: Choose Tall (Choose (Mirror Tall) Full) a
 myLayout = tiled ||| Mirror tiled ||| Full
   where tiled = Tall nmast delta ratio  -- All windows will spaced evenly
@@ -166,7 +167,7 @@ myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
     -- Use this binding with avoidStruts from Hooks.ManageDocks.
     -- See also the statusBar function from Hooks.DynamicLog.
     --
-    -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
+  , ((modm              , xK_b     ), sendMessage ToggleStruts)
 
     -- Quit xmonad
   , ((modm .|. shiftMask, xK_q     ), io exitSuccess)
