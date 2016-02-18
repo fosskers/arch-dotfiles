@@ -9,37 +9,38 @@ import           System.IO (hPutStrLn)
 import           XMonad
 import           XMonad.Hooks.DynamicLog hiding (xmobar, xmobarPP, xmobarColor, sjanssenPP, byorgeyPP)
 import           XMonad.Hooks.EwmhDesktops hiding (fullscreenEventHook)
+import           XMonad.Hooks.FadeWindows
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.SetWMName
 import           XMonad.Layout.Fullscreen
+import           XMonad.Layout.NoBorders
 import qualified XMonad.StackSet as W
 import           XMonad.Util.Run (spawnPipe)
 
 ---
 
+-- Consider `smartSpacing 5`
 myLayout :: Choose Tall (Choose (Mirror Tall) Full) a
 myLayout = tiled ||| Mirror tiled ||| Full
   where tiled = Tall nmast delta ratio  -- All windows will spaced evenly
         nmast = 1                       -- Number of windows in master pane
-        ratio = 1 / 2                   -- Size of master pane
         delta = 3 / 100                 -- % of screen to increment on resize
+        ratio = 1 / 2                   -- Size of master pane
 
--- Declare workspaces and rules for applications
 myWorkspaces :: [String]
-myWorkspaces = map clickable $ zip [1..]
-  [ "^i(/home/colin/.xmonad/dzen2/arch_10x10.xbm) term"
-  , "^i(/home/colin/.xmonad/dzen2/fs_01.xbm) web"
-  , "^i(/home/colin/.xmonad/dzen2/diskette.xbm) work"
-  , "^i(/home/colin/.xmonad/dzen2/pacman.xbm) games" 
-  , "^i(/home/colin/.xmonad/dzen2/cat.xbm) etc" ]
-    where clickable (i,ws) = "^ca(1,xdotool key alt+" ++ show i ++ ")" ++ ws ++ "^ca()"
+myWorkspaces = [code, web, devel, media, misc]
+  where code  = "   ^i(/home/colin/.xmonad/icons/code.xbm)   "
+        web   = "   ^i(/home/colin/.xmonad/icons/www.xbm)   "
+        devel = "   ^i(/home/colin/.xmonad/icons/Devel.xbm)   "
+        media = "   ^i(/home/colin/.xmonad/icons/media.xbm)   "
+        misc  = "   ^i(/home/colin/.xmonad/icons/pacman.xbm)   "
 
 myManageHook :: Query (Endo WindowSet)
 myManageHook = composeAll
   [ resource =? "dmenu"    --> doFloat
-  , resource =? "chromium" --> doShift (myWorkspaces !! 1)
-  , resource =? "firefox"  --> doShift (myWorkspaces !! 1)
-  , resource =? "gimp"     --> doShift (myWorkspaces !! 2)
+  , className =? "chromium" --> doShift (myWorkspaces !! 1)
+  , className =? "firefox"  --> doShift (myWorkspaces !! 1)
+  , resource =? "krita"     --> doShift (myWorkspaces !! 2)
   , resource =? "evince"   --> doShift (myWorkspaces !! 2)
   , fmap ("libreoffice" `isInfixOf`) className --> doShift (myWorkspaces !! 2)
   , fmap ("Steam" `isPrefixOf`) className --> doShift (myWorkspaces !! 3)
@@ -49,39 +50,42 @@ myManageHook = composeAll
   ]
 
 newManageHook :: Query (Endo WindowSet)
-newManageHook = manageDocks <+> myManageHook <+> manageHook def
+newManageHook = manageHook def <+> manageDocks <+> myManageHook
 
 myLogHook :: Handle -> X ()
-myLogHook h = dynamicLogWithPP $ def
-  { ppCurrent         = dzenColor foreground background . pad
-  , ppVisible         = dzenColor white0 background . pad
-  , ppHidden          = dzenColor white0 background . pad
-  , ppHiddenNoWindows = dzenColor black0 background . pad
-  , ppWsSep           = ""
-  , ppSep             = "   "
-  , ppOrder           = \(ws:l:_:_) -> [ws,l]
-  , ppOutput          = hPutStrLn h
-  , ppLayout          = wrap "^ca(1,xdotool key alt+space)" "^ca()"
-    . dzenColor white1 background
-    . (\case
-          "Full" -> "^i(/home/colin/.xmonad/dzen2/layout_full.xbm)"
-          "Spacing 5 ResizableTall" -> "^i(/home/colin/.xmonad/dzen2/layout_tall.xbm)"
-          "ResizableTall" -> "^i(/home/colin/.xmonad/dzen2/layout_tall.xbm)"
-          "SimplestFloat" -> "^i(/home/colin/.xmonad/dzen2/mouse_01.xbm)"
-          "Circle"        -> "^i(/home/colin/.xmonad/dzen2/full.xbm)"
-          _               -> "^i(/home/colin/.xmonad/dzen2/grid.xbm)" ) }
+myLogHook dlb = dynamicLogWithPP $ dzenPP {
+  ppOutput = hPutStrLn dlb
+  , ppTitle =  wrap "^ca(1,/home/colin/.xmonad/scripts/popterm.sh)" "^ca()" . pad  . shorten 50
+  , ppLayout = dzenColor color4 background
+    . (\x -> case x of
+          "Tall" -> "    ^i(/home/colin/.xmonad/icons/tiling.xbm)   "
+          "Mirror Tall" -> "    ^i(/home/colin/.xmonad/icons/mirrortall.xbm)   "
+          "Full" -> "    ^i(/home/colin/.xmonad/icons/floating.xbm)   "
+          _ -> "   New Layout   "
+      )
 
-myXmonadBar :: String
-myXmonadBar = "dzen2 -x '0' -y '0' -h '12' -w '300' -ta 'l' -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn " ++ myFont
+  , ppCurrent = dzenColor foreground background -- foreground "#FF6000"
+  , ppVisible = dzenColor color4 background
+  , ppHidden = dzenColor color4 background  -- foreground "#7BB352"
+  , ppHiddenNoWindows = dzenColor color8 background
+  , ppOrder = \(ws:l:t:_) -> [ws,l,t]
+  }
 
 myStatusBar :: String
-myStatusBar = "conky -qc /home/colin/.xmonad/.conky_dzen | dzen2 -x '300' -w '980' -h '12' -ta 'r' -bg '" ++ background ++ "' -fg '" ++ foreground ++ "' -y '0' -fn " ++ myFont
+myStatusBar = "dzen2 -x 0 -w '683' -h '28' -ta l -xs 1 -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn '" ++ myFont ++ "'"
+
+myConkyBar :: String
+myConkyBar = "conky -c ~/.xmonad/conky_dzen | dzen2 -ta r -x '683' -w '683' -h '28' -p $OPTS -xs 1 -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn '" ++ myFont ++ "'"
+
+myFont :: String
+myFont = "-*-ubuntu-*-*-*-*-12-*-*-*-*-*-*-*"
 
 main :: IO ()
 main = do
-  dzenLeftBar  <- spawnPipe myXmonadBar
-  dzenRightBar <- spawnPipe myStatusBar
-  xmonad . ewmh $ myConfig dzenLeftBar
+  dzenLeftBar  <- spawnPipe myStatusBar
+  dzenRightBar <- spawnPipe myConkyBar
+  xmonad $ myConfig dzenLeftBar
+--  xmonad . ewmh $ myConfig dzenLeftBar
 
 myConfig dlb = def
   { terminal           = myTerminal
@@ -91,18 +95,15 @@ myConfig dlb = def
   , focusedBorderColor = red1
   , modMask            = mod4Mask
   , keys               = myKeys
-  , layoutHook         = avoidStruts myLayout
+  , layoutHook         = smartBorders $ avoidStruts myLayout
   , workspaces         = myWorkspaces
   , manageHook         = newManageHook
-  , handleEventHook    = fullscreenEventHook <+> docksEventHook
+  , handleEventHook    = fadeWindowsEventHook <+> fullscreenEventHook <+> docksEventHook
   , startupHook        = setWMName "LG3D"
   , logHook            = myLogHook dlb >> setWMName "LG3D" }
   
 myTerminal :: String
 myTerminal = "urxvt"
-
-myFont :: String
-myFont = "xft:lime:size=6"  --":bold:size=8"
 
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
@@ -192,9 +193,6 @@ myKeys conf@(XConfig { XMonad.modMask = modm }) = M.fromList $
   | (key, sc) <- zip [xK_w, xK_r] [0..]
   , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
-background = "#000000"
-foreground = "#ffffff"
-
 black0 = "#343638"
 black1 = "#404040"
 
@@ -218,3 +216,22 @@ cyan1 = "#6e98b8"
 
 white0 =  "#b2b2b2"
 white1 = "#bdbdbd"
+
+background= "#232323" -- "#0E0E0E"
+foreground= "#CBCBCB"
+color0= "#454545"
+color8= "#676767"
+color1=  "#CC4747"
+color9=  "#BF5858"
+color2=  "#A0CF5D"
+color10= "#B8D68C"
+color3=  "#FF9B52"
+color11= "#FFB680"
+color4=  "#307D92" -- "#508934" -- "#AB2010" -- "#99492F"
+color12= "#99C7BF"
+color5=  "#A966CC"
+color13= "#BD9FCC"
+color6=  "#6CAB79"
+color14= "#95BA9C"
+color7=  "#d3d3d3"
+color15= "#fefefe"

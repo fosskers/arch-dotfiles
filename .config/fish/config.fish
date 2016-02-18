@@ -6,8 +6,13 @@ set fish_greeting
 # EDITOR
 set -x EDITOR "emacs -q"
 
+# TERMINAL
+set -x TERM "rxvt-unicode-256color"
+
+set -x LC_ALL "en_US.UTF-8"
+
 # PATH
-set -x PATH '/home/colin/code/haskell/cabal/.cabal-sandbox/bin' '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/home/colin/.gem/ruby/2.1.0/bin' '/opt/cuda/bin'
+set -x PATH '/home/colin/code/haskell/cabal/.cabal-sandbox/bin' '/bin' '/usr/local/bin' '/usr/bin'  '/usr/sbin' '/sbin' '/home/colin/.cabal/bin' '/home/colin/.gem/ruby/2.1.0/bin' '/opt/cuda/bin' '/home/colin/building/elm-format/.stack-work/install/x86_64-linux/lts-5.2/7.10.3/bin/'
 
 # FOR ADENDA DEV
 set -x GOOGLE_APPLICATION_CREDENTIALS '/home/colin/code/AdendaServer/Source/AdendaServer/conf/adenda-server-0d72fe7d5d09.json'
@@ -203,7 +208,7 @@ function mkcd
 end
 
 function gd
-  git diff $argv --color
+  git diff $argv
 end
 
 function ga

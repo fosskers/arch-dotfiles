@@ -1,0 +1,24 @@
+background yes
+out_to_console yes
+out_to_x no
+total_run_times 0
+colorZ  95BA9C
+# Update interval in seconds
+update_interval 2
+update_interval_on_battery 10
+
+
+TEXT
+^ca(1,/home/colin/.xmonad/scripts/dzen_network.sh)^fg(\#307D92)^i(/home/colin/.xmonad/icons/wifi_01.xbm) ^fg(\#fefefe)${wireless_essid wifi0} ${downspeedf wifi0} / ${upspeedf wifi0}   ^ca()\
+^fg(\#307D92)   ^i(/home/colin/.xmonad/icons/cpu.xbm) ^fg(\#fefefe)${cpu cpu1}% ${cpu cpu2}%    \
+^fg(\#307D92)   ^i(/home/colin/.xmonad/icons/mem.xbm) ^fg(\#fefefe)${memperc}%    \
+^fg(\#307D92)   ^i(/home/colin/.xmonad/large_icons/battery.xbm) ^fg(\#fefefe)${battery_percent BAT0}%    \
+^ca(1,/home/colin/.xmonad/scripts/popterm.sh)^fg(\#307D92)   ^i(/home/colin/.xmonad/icons/calendar.xbm) ^fg(\#fefefe)${time %a, %b %d, %Y}    \
+^fg(\#307D92)   ^i(/home/colin/.xmonad/icons/clock.xbm) ^fg(\#fefefe)${time %H:%M:%S} ^ca()    \
+^fg(\#307D92)   ^i(/home/colin/.xmonad/icons/Arch.xbm)^fg(\#fefefe)    \
+
+
+#Ç ${cpu}% \
+#Î ${memperc}% \
+#Â ${battery_percent     BAT0}% \
+#ø ${time %a, %b %d,%y È %H:%M:%S}
