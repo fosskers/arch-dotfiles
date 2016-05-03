@@ -75,8 +75,9 @@ myLogHook dlb = dynamicLogWithPP $ dzenPP {
 myStatusBar :: String
 myStatusBar = "dzen2 -x 0 -w '683' -h '28' -ta l -xs 1 -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn '" ++ myFont ++ "'"
 
+-- 683
 myConkyBar :: String
-myConkyBar = "conky -c ~/.xmonad/conky_dzen | dzen2 -ta r -x '683' -w '683' -h '28' -p $OPTS -xs 1 -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn '" ++ myFont ++ "'"
+myConkyBar = "conky -c ~/.xmonad/conky_dzen | dzen2 -ta r -x '650' -w '650' -h '28' -p $OPTS -xs 1 -fg '" ++ foreground ++ "' -bg '" ++ background ++ "' -fn '" ++ myFont ++ "'"
 
 myFont :: String
 myFont = "-*-ubuntu-*-*-*-*-12-*-*-*-*-*-*-*"

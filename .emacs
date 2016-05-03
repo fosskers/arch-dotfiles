@@ -57,6 +57,25 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; org-mode
+;; Fix org-mode indentation bullshit
+;; See http://emacs.stackexchange.com/q/9528/3882
+(defun my-org-clocktable-indent-string (level)
+  (if (= level 1)
+      ""
+    (let ((str "^"))
+      (while (> level 2)
+        (setq level (1- level)
+              str (concat str "--")))
+      (concat str "-> "))))
+
+(advice-add 'org-clocktable-indent-string :override #'my-org-clocktable-indent-string)
+
+; For the agenda.
+(global-set-key "\C-ca" 'org-agenda)
+
+;; Pomodoro
 (require 'pomodoro)
 (pomodoro-add-to-mode-line)
 
@@ -116,14 +135,13 @@
    '(haskell-process-auto-import-loaded-modules t)
    '(haskell-process-log t)
    '(haskell-process-type 'stack-ghci))
-  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
+  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-file)
   (define-key haskell-mode-map (kbd "C-c h b") 'haskell-interactive-bring)
   (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
   (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
   (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
   (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
   (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
-  (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
   (global-set-key (kbd "C-c h r") 'haskell-process-restart)
   (define-key haskell-mode-map (kbd "C-c h t") 
     (lambda () (interactive)
@@ -134,7 +152,24 @@
         (progn 
           (setq haskell-process-type 'stack-ghci)
           (message "Now in stack mode.")))))
+  ;; GHC-MOD
+;;  (autoload 'ghc-init "ghc" nil t)
+;;  (autoload 'ghc-debug "ghc" nil t)
+;;  (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+;;  (define-key haskell-mode-map (kbd "M-N") 'ghc-goto-next-error)
+;;  (define-key haskell-mode-map (kbd "M-E") 'ghc-goto-prev-error)
 
+  ;; COMPANY-GHC
+;;  (require 'company)
+;;  (add-hook 'haskell-mode-hook 'company-mode)
+;;  (add-to-list 'company-backends 'company-ghc)
+;;  (custom-set-variables '(company-ghc-show-info t))
+
+  ;; STRUCTURED-HASKELL-MODE
+;;  (add-to-list 'load-path "/home/colin/code/haskell/structured-haskell-mode/elisp")
+;;  (require 'shm)
+;;  (add-hook 'haskell-mode-hook 'structured-haskell-mode)
+  
   ;; PKGBUILD mode
   (autoload 'pkgbuild-mode "pkgbuild-mode.el" "PKGBUILD mode." t)
   (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode))
@@ -259,6 +294,10 @@ specified by the user."
 (defun wrap75 ()
   (interactive)
   (line-wrap-region 75))
+
+(defun wrap60 ()
+  (interactive)
+  (line-wrap-region 60))
 
 (defun line-wrap-jap (len)
   "Line wrap a region of Japanese characters. Assumed to have no spaces."
@@ -831,6 +870,7 @@ The result of `f` on the last item of the list is returned."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(android-mode-sdk-dir "/opt/android-sdk")
+ '(company-ghc-show-info t)
  '(flycheck-check-syntax-automatically (quote (save mode-enabled)))
  '(flycheck-python-flake8-executable "flake8-python2")
  '(haskell-process-auto-import-loaded-modules t)
@@ -852,6 +892,15 @@ The result of `f` on the last item of the list is returned."
      (find-tag . helm-completing-read-with-cands-in-buffer)
      (ffap-alternate-file)
      (tmm-menubar))))
+ '(magit-commit-arguments (quote ("--all" "--verbose" "--gpg-sign=B12DBF9E6B930BED")))
+ '(org-agenda-files
+   (quote
+    ("~/sync/coding.org" "~/contracting/azavea/azavea.org" "~/sync/schedule.org")))
+ '(org-clock-idle-time 15)
+ '(org-clock-persist (quote history))
+ '(org-hide-emphasis-markers t)
+ '(org-log-done (quote time))
+ '(org-pretty-entities t)
  '(pomodoro-break-time 2)
  '(pomodoro-long-break-time 30)
  '(purescript-mode-hook
